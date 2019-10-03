@@ -1,0 +1,85 @@
+select *from Dept
+select *from EMP
+
+/*Insert EMP Details*/
+Create Procedure SP_InsertDetails
+(
+@EmpName varchar(50),
+@EmpJob varchar(50),
+@EmpSalary money,
+@DeptId int
+)
+as
+begin
+insert into Emp(EmpName,EmpJob,EmpSalary,DeptId)Values(@EmpName,@EmpJob,@EmpSalary,@DeptId)
+End
+
+/*Update Emp Details*/
+
+Create Procedure SP_UpdateEmpDetailsById
+(
+@EmpId int,
+@EmpName Varchar(50),
+@EmpJob Varchar(50),
+@EmpSalary money,
+@DeptId int
+)
+as
+begin
+Update Emp set
+EmpName=@EmpName,
+EmpJob=@EmpJob,
+EmpSalary=@EmpSalary,
+DeptId=@DeptId where Empid = @EmpId
+End
+
+/*Delete Emp*/
+
+Create Procedure SP_DeleteEmpDetailsByEmpId
+(
+@EmpId int
+)
+as
+begin
+Delete From Emp Where Empid=@EmpId
+End
+
+/*To get Emp Details by Empid */
+
+Create Procedure Sp_GetEmpDetailsById
+(
+@EmpId int
+)
+as
+begin
+select e.EmpId,e.EmpName,e.EmpJob,e.EmpSalary,e.DeptId,d.DeptName from Emp e, Dept d where e.DeptId=d.Deptid and e.Empid=@EmpId
+End
+
+/*To get All Employee*/
+
+Create Procedure Sp_GetAllEmp
+as
+begin
+Select e.Empid,e.EmpName,e.EmpJob,e.Empsalary,e.DeptId,d.DeptName from Emp e,Dept d where e.DeptId=d.DeptId
+End
+
+/*To get All Employees Based on DeptId*/
+
+Create Procedure Sp_GetAllEmpByDeptId
+(
+@DeptId int
+)
+as
+begin
+Select e.Empid,e.EmpName,e.EmpJob,e.EmpSalary,e.DeptId,d.DeptName from Emp e,Dept d 
+Where e.DeptId=d.Deptid and e.DeptId=@DeptId
+End
+
+
+/* To get All Dept*/
+
+create Procedure Sp_GetAllDept
+as
+begin
+select *from Dept
+end

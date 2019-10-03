@@ -1,0 +1,115 @@
+Consuming a class
+-----------------
+we can consume a class and it members from other classes in 2 diff ways
+1)by creating the instance
+2) Inheritance
+
+To test the second i.e creating the instance add a new class naming it as 
+Testprogram.cs write the following code.
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace ConsoleApp2
+{
+    class TestProgram
+    {
+        public void callMethods()
+        {
+            Program obj = new Program();
+            obj.Test1();
+            obj.Test2(6, 15);
+            Console.WriteLine(obj.Test3());
+            Console.WriteLine(obj.Test4("nit"));
+        }
+        static void Main()
+        {
+            new TestProgram().callMethods();
+            Console.ReadLine();
+        }
+    }
+}
+
+Note:un-named instance are used generally in case of single method class
+
+parameters:
+
+are used for sending values into a method for exeaution to make them dynamic 
+and these parameters are of two types
+
+1)Input parameters
+2)output parameters
+
+Input parameters are uses for sending values into a method for execution,
+ Where as output parameters are used 
+for sending result put of a method after execution 
+
+variale of a class: a copy of the class that is not initialized
+Instance of a class:a copy of the class that is initialize using the new keyword which has own memory
+Reference of a class:Refernce of class can be called as apointer to the instance
+
+class it's user-defined type
+
+int =100;
+int i= 100; //i is copy of type int
+
+string = "Hello";
+String s = "Hello"; c is copy if type string
+
+
+Ienumerable:
+
+ IEnumerator GetEnumerator()
+
+IEnumerator
+
+  bool MoveNext()
+  object Current;
+  void Reset()
+
+BOF---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

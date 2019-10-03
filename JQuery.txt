@@ -1,0 +1,192 @@
+					JQuery
+					------
+Event:
+Event is message sent by sender to its subscriber inorder to notify the change..
+
+It follow a software behaviour pattern called observer
+
+JQuery provides several methods that are used to handle various events for any specific object
+
+Event is a function that returns specific functionality in Jquery
+
+$("buttin").click(function(){
+});
+
+Every event comprises of set of orguments $propertice Which you can access by using event object
+
+$("button").click(function(event){
+	
+event.Client x;
+event.client y;
+});
+
+The various JQuery Events are shown below
+
+Event      Description
+-----	---------------
+Click()-->Actions when elements clicked
+change()-->Action when value changed
+Blur()-->Action When element lost focus
+Focus()-->Action when element gets focus
+
+Cut(),Copy(),Paste()==>Perform specied actions
+
+Keyup(),Keydown(),Keypress()==>Actions of various keyevents
+
+Mouseover(),MouseOut(),MouseDown(),MouseUp(),MouseOver()==>ActionsOn mouse events
+
+Submit()-->Action on form submit
+
+Handeling Click Event
+--------------------
+
+1) Adding Action Method in controller 
+
+ public ActionResult KeyEvents()
+        {
+            return View();
+        }
+
+
+
+keyEvents.cshtml
+----------------
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title></title>
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("P").text("Content Render into Paragraph");
+            $(".heading").text("Heading Rendered");
+            $("#msg").text("Div Rendered")
+            $("#insert").click(function (event) {
+                $("#msg").html("Record Inserted" + "click At x =" + event.clientX);
+            });
+            $("#Update").click(function (event) {
+                $("#msg").html("Record Updated");
+            });
+            $("#btn1").click(function (event) {
+                $("#msg").html("alert message");
+            });
+            $("#button1").click(function () {
+                alert('Jquery Tutorial');
+            });
+        });
+    </script>
+</head>
+<body>
+
+    <input type="button" value="click me" id="button1" />
+    <h2 class="heading"></h2>
+    <div id="msg">
+        <p></p>
+    </div>
+    <h2>Event Demo</h2>
+    <div>
+
+        <button id="btn1">Alert</button>
+        <button id="btn2">Alert</button>
+        <button id="btn3">Alert</button>
+        <button id="insert">Insert</button>
+        <button id="Update">Update</button>
+        <div id="shape" style="width:100px;height:100px; background-color:yellow">
+        </div>
+    </div>
+<div id="msg">
+</div>
+</body>
+</html>
+
+
+JQUery Effects
+--------------
+Jquery provides a set of methods that are used to handle various transistion and animation effects dynamically 
+the commenly used effects are shown below
+
+show()
+hide()
+toggle()
+fade up()
+fade toggle()
+fade()
+hide down()
+slide up()
+slide toggle()
+animate()
+delay()
+
+<h1>JQuery Effects</h1>
+        <botten>Show/Hide</botten>
+        <div>
+            <div id="msg1" style="background-color:yellow">
+                <ol>
+                    <li>item-1</li>
+                    <li>item-2</li>
+                    <li>item-3</li>
+                </ol>
+            </div>
+        </div>
+
+ $(document).ready(function () {
+                $("button").click(function () {
+                    $("msg1").slideToggle(300);
+                })
+            });
+
+
+JQuery Ajax call
+------------------
+JQuery Ajax call using "xmlHttpRequest()"
+
+-->JQuery provides a set of asychronous mathod that are used to native ajax call
+-->The Page is updated with new  details with following method
+
+The Commonly used AJAX methods are:
+1)AJAX()	:	It defines request to a remote URL and get result from specified URL
+2)Get()		:	It makes a get request to any remote Resource so that tha response from the resource can
+			be used in the page
+3)POST()	:	IT is used to submit to data to any secified URL on POST request
+4)GetJson	:	It is used to make a request to any URL that response Json formated Data
+
+Synatx
+------
+
+$ajax({
+	URL:"ContentHelp.txt",success:function(result)
+	{
+	$("#data").html(reques)
+});
+
+
+Json Request
+------------
+Request Data from Json File
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

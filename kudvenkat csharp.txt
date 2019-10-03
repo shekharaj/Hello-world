@@ -1,0 +1,1036 @@
+part1:
+
+Introduction to c sharp
+
+using System;
+class Program;
+{
+	static void Main()
+	{
+	Console.WriteLine("Hello World");
+	}
+}
+
+Namespace is acollection of classes, interfaces,structures,enum
+Part:2
+-----
+read from the console.
+writing from the console.
+
+using System;
+class program
+{
+static void Main()
+ Console.WriteLine("Please enter your name");
+ string UserName = console.ReadLine();
+ Console.WriteLine("Hello", UserName);//Concatination
+ console.WritrLine("Heelo{0}",UserName);//placeholder syntax
+}	
+
+#Case Senstive
+
+using System;
+class Program;
+{
+	static void Main()
+	{
+	Console.WriteLine("Please enter the 1stName");
+	string firstName = Console.ReadLine();
+	Console.WriteLine("Please Enter the 2ndName");
+	string lastName = Console.ReadLine();
+	Console.WriteLine("Hello {0},{1}",FirstName,LastName);//pleaseholder syntax
+    }
+}
+
+
+Built in types of Csharp
+------------------------
+boolean type: only true or false
+-------------
+using System;
+Class Program
+{
+	static void Main()
+	{
+	bool b = true;
+	b = 123;//Error
+	}
+}
+
+Integer types: sbyte,byte short,ushort,int uint ,long,ulong,char
+--------------
+
+using System;
+class program
+{
+	static void Main()
+	{
+	int i=0;
+	Console.WriteLine("Min={0}",int.MinValue);//-2147483647
+	Console.WriteLine("Min={0}",int.MaxValue);//2147483647
+	}
+}
+
+floting point types: float and double
+------------------
+using System;
+class program
+{
+ static void Main()
+ {
+ double d = 123.333333;
+ Console.WriteLine();
+  }
+}
+
+Boolean Type: Only true/False
+Integer Type: sbyte,byte,short,ushort,int,Uint,long,ulong,Char;
+Floting types: float and double;
+decimal types: 28-29digits
+String Datatypes	
+
+Verbatim literal:: is a string with an @symbol prefix, as in @"Hello"
+
+String Str1 = "";
+
+Str1 = "\\MyServer\TestFolder\NewFolder";
+
+In statement above the compiler gives an error of 'Unrecognized escape sequence', but 
+if we write the code like this:
+
+str2 = @"\\MyServer\TestFolder\NewFolder";
+
+the compiler does not generate an error.
+
+Operators:
+----------
+assignment Operator: =
+arthametic         :  +,-,*,/,%
+Comparision        : ==,!=,>,>=,<,<=
+Conditional        : &&,||
+Ternary            : ?:
+Null Coalescing    : ??
+
+using System;
+class Program
+{
+ static void main()
+	{
+	 int Numerator = 10;
+	 int Denominator = 2;
+	int result = Numerator/Denominator;
+	Console.WriteLine("Result ={0}, Result");
+	}
+}
+
+using System;
+class Program
+{
+ static void Main()
+ {
+	int number =10;
+	int anotherNumber = 21;
+	if(Number ==10 && anotherNumber ==20)
+	{
+	Console.WriteLine("Hello");//Not excuted the code if use || then print Hello	
+	}
+}	
+
+2) using System;
+  class Progrma
+  {
+ static void Main()
+  {
+  int Number = 15;
+  bool Isnumber10; 
+ if(Number == 10)
+ {
+    IsNumber10 = true;
+	
+ }
+ else
+	
+ {
+	IsNumber10=flase;
+ }
+
+//bool isNumber10 = Number == 10? true:false//Ternary Operator used here
+
+Console.WriteLine("Number == 10 is{0}", IsNumber);
+}
+
+}
+
+Implicit&Ecplicit Conversion?
+
+1)When there is no loss of information if the conversion is done
+2)If there is no possobility of throwing exception during the conversion
+
+ex: 
+
+converting an int to afloat will not loose any data and no exception will be thrown, hence an implicit
+ conversion can be done.
+
+Where as when converting a flat to an int, we loose the fractional part and also a possibility of overflow
+exception .Hence in this case an explicit conversion is required.
+
+using System;
+class Program
+{
+ static void Main()
+	{
+	int i =100;
+	floatn f =i;
+	Console.WriteLine(f);
+	}
+}
+
+using System;
+class Program
+{
+ Static void Main()
+ {
+   //float f = 123.45f;
+    int i = (int)f;		//Typecast operator cast() print wrong number
+    int i = Convert.ToInt32(f)//Convert class--Exception will occure
+    int i = f;
+	
+  Console.WriteLine(i);
+  }
+}
+
+Diff betwen parse and tryparse
+
+if the number is in a string format you have 2options:
+
+parse() and TryParse()
+Parse method throw an exception if it cannot parse the value, where TryParse() returns a bool indicaing whether
+ it succeedd ot failed
+use parse() if you are sure the value will be valid, otherwise use TryParse()
+
+usnig System;
+class Program
+{
+ static void Main()
+	{
+  	string strNumber = "100";
+	int i = int.Parse(strNumber);
+	Console.WriteLine(i);//100
+	}
+}
+
+using system;
+class Program
+{
+ static void Main()
+ {
+ string strnumber = "100TG";
+ int Result =0;
+  bool IsConversionSuccessful = int.TryParse(strnumber, out Result);
+  if(IsConversionSuccessful)
+  {
+ Console.writeLine(i);
+  }
+ else
+ {
+ Console.WriteLine("please enter the valid number")
+  }
+ }
+}
+
+
+
+
+
+
+Conditional statements are two
+
+If and Switch
+
+Looping statements are:
+
+while, dowhile, for
+
+If
+---
+using System;
+class Program
+{
+ static void Main()
+ {
+ Console.WriteLine("Please enter a number");
+ int UserNumber = int.Parse(console.ReadLine());
+//Parse takes the string and converts to the integer.	
+ //Convert string format to integerformat bcz readline returns the string value only
+
+if(UserNumber ==1)
+ {
+ Console.WriteLine("your number is one");
+ }
+ }
+}
+
+||any one condition is true it is true
+
+| check the both condions 
+
+&& one condition is true it will check another condition
+
+& chek both condions are checked
+
+usign System;
+class Program
+{
+ static void Main()
+ {
+ Console.WriteLine("Please enter the a number");
+ int userNumber = int.Parsr(Console.Realine());
+ if(UserNumber == 10 || userNumber ==20)
+ {
+ console.Writeline("your number is 10or 20"); 
+ }
+ else
+ {
+ Console.WriteLine("your number not is 10 or 20")
+ } 
+}
+
+The While loop
+While loop checks the condition first.
+if the condition is true, statements with in the loop are executed.
+This Process is repeated as long as the condition evalurates to true.
+
+//while loop there is never ending loop
+
+using System;
+class program
+{
+ static void Main()
+ {
+ Console.WriteLine("Enter the your target");
+ int usertarget = int.Parse(console.ReadLine());
+ int start = 0;
+ while(start<=userTarget)
+ {
+ Console.WriteLine(start);
+ start = start/2;
+ }
+ }
+}	
+ 
+For
+----
+
+a for loop is very similar to while loop. in a while loop we do the initialization at one place, 
+condition check at anothe place, and modify the variable at another palce, where as for loop has all
+of these at one place... 
+
+using system;
+class Program
+{
+ static void Main()
+ {
+ int[]Number = new int[3]
+ 
+ Number[0] = 101;
+ Number[1] = 102;
+ Number[2] = 103;
+
+ foreach(int arr in Number)
+ {
+	console.Writeline(arr);
+
+ }
+ 
+ for(int j = 0;j<Number.Length;J++)
+ {
+ Console.WriteLine(Numbers[j]);
+ }
+
+ int i =0;
+ while(i<Number.Length)
+ {
+ Console.WriteLine(Numbers[i]);
+ i++;
+}
+}
+
+foreachloop
+___________:
+
+Aforeach loop is used to iterate through the items in a collection. for Example, foreach loop can be used
+with arrays or collection such as Arraylist,Hashtable and Generics. We will cover collectons and generics  
+
+using system;
+
+class Program
+{
+ static void Main()
+ {
+ for(int i=1; i<=20; i++)
+ {
+  Console.WriteLine(i);
+  if(i==10)
+  break;
+ }
+}
+
+using System;
+class program
+{
+ static void Main()
+ {
+ for(int i=0;i<=20; i++)
+ {
+  if(i%2 == 1)
+  Continue;	
+
+ console.WriteLine(i);
+ }
+}
+}
+
+Methods:
+--------
+
+Methods are also called as functions. These terms are used interchangeably
+methods are extermely useful because they allow you to define your logic once, and use it, at many places.
+methods make the maintenance of your application easier.
+
+Method signature:
+[attributes]
+access-modifiers return type method-name(Parameters)
+{
+ Method Body
+ }
+-->Retrun type can be valid data type or valid
+--?Method name canbe any meaningful name
+-->parameters are optional
+
+Non-static method: (Create Instace)
+-------------------
+
+using System;
+class Program
+{
+  public static void Main() //static method
+ {
+  program p = new program() //creating instance 
+  p.EvenNumber();
+ }
+ public void EvenNumbers() //Instance method
+ {
+ int start = 0;
+ while(start <= 20)
+ {
+  Console.WriteLine(start);
+ }
+ }
+}
+
+Static method(No need to create instance)
+--------------
+
+using System;
+class Program
+{
+  public static void Main() //static method
+ {
+   
+  Program.EvenNumber();
+ }
+ public  static void EvenNumbers() //Static method no need to create instance direct call
+ {
+ int start = 0;
+ while(start <= 20)
+ {
+  Console.WriteLine(start);
+ }
+ }
+}
+
+adding anothe method:
+----------------------
+using System;
+class Program
+{
+  public static void Main() //static method
+ {
+   
+  Program.EvenNumber(30);
+  int sum = p.add(10,20)
+  
+ Console.WriteLine("sum = {0}",sum)
+ }
+ 
+ Public int add(int FN, int SN)
+ {
+   return FN+SN;
+ }
+
+ public void EvenNumbers( int target) //Instance method
+ {
+ int start = 0;
+ while(start <= target)
+ {
+  Console.WriteLine(start);
+ }
+ }
+}
+
+
+Static Vs Instance methods:
+
+   When a method declaration include a static modifier, that method is said to be static method 
+ When no static modigier is present ,the method is said to be an instace method
+ 
+
+using System;
+
+class Customer
+{
+ string _firstName;
+ string _lastName;
+
+//initial the class fields using Constructor
+ public customer(string FirstName, string LastName)
+ {
+ this.firstName=FirstName;
+ this.lastName = LastName;
+ }
+ public void printFullName()
+ {
+ Console.WriteLine("FullName={0}",this._firstName+" "+this._lastName)
+ }
+ ~Customer()
+ {
+	//clean up code
+ }
+
+class program
+{
+ public static void Main()
+ {
+  Customer c1 = new Customer("shekhar","Technologies");
+	c1.PrintFullName();
+ }
+}
+ 
+The purpose of  a class constructor is to initialize class fields. a class constructor is automatically called
+ when an instance of a class is created.
+
+Constructor do not have return values and always have the same name as the class
+
+Constructor are not mandatory. If we do not provide a constructor, a default parameter less constructor is
+automatically provided
+
+Constructor can be overloaded by the number and type of parameters
+
+
+Part:2 Static and instance members
+----------------------------------
+using system;
+
+class Circle
+{
+  static float _PI = 3.14F; // we need static constructor to instialize static field
+  int _Radius;
+   
+   public static Circle()
+   {  
+		 
+   }
+  
+
+  public Circle(int Radius)
+  {
+    this._Radius = Radius;
+  }
+  public float CalculateArea()
+   {
+
+    return Circle.PI*this._Radius*this._Radius;
+   }
+  
+}
+
+class Program
+{
+ public static void Main()
+ {
+  circle c1 = new Circle(5);
+  float Area1 = c1.CalculateArea();
+  Console.WriteLine("Area = {0}",Area1)
+	
+
+}
+}
+
+When a class members include a static modifier, the members is called as static member.
+When no static modifier is present the member is called as non static member or instance member.
+
+Static members are invloked using class name, where as instance members are invoked using instance of the class
+
+An instance member belongs to specific of a class, if i create 3 objects of a class, i will have 3 sets
+of instance members in the memory, where as there will ever be
+
+Inheritance
+-----------
+
+Code Reuse
+
+using System;
+
+public class Employee
+ {
+ public string Fname;
+ Publice string Lname;
+ string Email;
+	
+ 	public void PrintFullName()
+  	{
+	Console.writeLine(FirstName+ ""+LastName);
+	}
+
+ }
+
+public class FullTimeEmployee:Empolyee
+{
+	float YearlySalary;
+}
+
+public class PartTimeEmployee:Empolyee
+{
+	float Hourlyrate;
+}
+
+//Multilevel Inheritance
+public class A : PartTimeEmployee
+
+public class Program
+{
+ public static void Main()
+ {
+  FullTimeEmployee FTE = new FullTimeEmployee();
+  FTE.Fname="Pragin";
+  FTE.Lname="Tech";
+  FTE.YearlySalarly = 5000;
+  FTE.PrintFullName();
+  PartTimeEmployee PTE = newPartTimeEmployee();
+  PTE.Fname="Pragin";
+  PTE.Lname="Tech";
+  PTE.PrintFullName();
+ }
+
+
+------------------------------------
+using System;
+
+public class Parentclass
+  
+ Public ParentClass()
+  {
+  Console.WriteLine("ParentClass Constructor called")
+  }
+
+//base keyword refer to parent class con
+	public ParentClass(string Message)
+        {
+		Console.Write(Message);
+	}
+
+
+}
+public class childclass:Parentclass
+{
+ public childclass():base("Derived class controlling Parent class")
+ {
+  console.writeLine("Childclass constructor called");
+  }
+}
+public class Program
+{
+ public static void Main()
+ {
+	childclass cc = new childclass();
+	
+ }
+}
+
+Part22//Method hiding and invoking hidden base class members
+
+ use the new keyword to hide a base class members. you will get a compiler warning if you miss the new keyword
+
+
+different ways to invoke a hidden base class members from derived class
+ Use base keyword
+ Cast child type to parent type and invoke the hidden members
+ parentclass PC = new ChildClass()
+ pc.HiddenMethod()
+
+using system;
+
+Public class Employee
+{
+ public string FirstName;
+ public string LastName;
+
+ Public new void PrintFullName() //method
+ {
+   Console.WriteLine(FirstName+" "+LastName)
+ }
+}
+public class PartTimeEmployee:Employee
+{
+	Console.WriteLine(FirstName+" "+LastName+" "-contractor)
+}
+public class FullTimeEmployee:Employee
+{
+}
+
+ public class Program
+ { 
+  public static void Main()
+  {
+   FullTimeEmployee FTE = new FullTimeEmployee
+   FTE.FirstName = "FullTime";
+   FTE.LastName = "Employee";
+	FTE.PrintFullTime();
+  
+  PartTimeEmployee PTE = new PartTimeEmployee
+  PTE.FirstName = "PartTime";
+  PTE.LastName="Employee";
+  FTE.PrintFullTime();
+ }
+}
+Aparent class Reference variable can point to a child class object where as
+
+Part23:
+
+Polymorphism:
+-------------
+
+Polymorphism is enables you to invoke derived class method through base class reference variables at run time
+in base class method we declared as virtual and derived class method we declared as override
+
+Part24::
+Method over overriding and method hiding
+
+Method overriding:
+------------------
+In method overriding a base class reference variable pointing to a child object,
+will invoke the overridden method in the child class
+
+MethodHiding
+-----------
+In method hiding a base class reference variable pointing to a child class object, will invoke the hidden 
+method in the Base class
+
+
+using System;
+public class BaseClass
+{
+ public virtual void Print()
+ {
+	Console.WriteLine("I am a Base class print method")
+  }
+}
+ public class DerivedClass:BaseClass
+ {
+	
+ public override void Print()
+ {
+ Console.WriteLine("I am a Derived  class print method")
+ }
+ }
+public class Program
+{
+ public static void Main()
+ {
+	Baseclass B = new Derivedclass()
+	B.Print();
+  }
+}
+
+Propertices
+-----------
+
+	programming languages that does not have propertices use getter and setter methods to encapsulate and
+	protect fields
+	
+using System
+public class Student
+{
+  
+  public int ID;
+  public string Name;
+  Public int PassMark = 35;
+ }
+	public void setid(int id)
+	{
+	if(id<=0)
+	{
+	throw new Exception("student id cannot be nagative")
+	}
+	this._id = id;
+  }
+	public int GetId()
+	{	
+	return this._id;
+	}
+}
+public class Program
+{
+ public static void Main()
+ {
+  Student c1= new Student();
+  c1.ID = -101;
+  c1.Name = null;
+  c1.PassMark = 0;
+ Console.writeline("Id = {0} && Passmark = {2}")
+c1.Id,c1.Name,c1.PassMark;
+
+
+
+
+public class Circle()
+{
+ public double Radius = 12.34;
+ }
+ 
+ class TestCircle
+ {
+	static void Main(){
+	Circle c = new Circle();
+	double Radius = c.Radius; //getting the old value of Radius
+ 	c.Radius = 56.78;	 //Setting a new value for Radius
+ 	}
+	}
+
+Method Overloading:
+------------------
+
+Function overloading and method overloading terms are used interchagably
+
+Method overloading allows a class to have multiple methods same name, but a diff with a different signature So, in c sharp 
+function can be overloaded based on the numbers, type(int,float etc) and kind (value,Ref or out) of parameters
+
+using System;
+
+public class Program
+{
+ public static void Main()
+ {
+  Add()
+ }
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

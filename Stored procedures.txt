@@ -1,0 +1,341 @@
+sub-Programs
+------------
+1)Procedures
+2)Functions
+
+These are stored in Database
+
+Advantages:
+----------
+1)Modular programming:
+---------------------
+(divided a big program into small parts/Moduls)
+using Procedures/Functions we can break a big program into small modules
+2)Supports Reusability:
+-----------------------
+->Proce/Function can be centralized i.e stored in Database so applications which are connected to database 
+can call procedure/Function
+
+3)support Security:
+------------------
+Because these programs are stored in database so only authorized users can execute these program
+
+4)Improves performance:
+-----------------------
+one time compiled and used many times proc/Function are precompiled i.e When create proc/Function program is
+compiled and stored in database and whenever we call procedure only execution is repeated but not compiled
+
+When Query Execution
+---------------------
+
+Parssed(Compilation ->check syntax(Fallow the Rules)/Semantics)
+  |
+Optimized-->Prepare plans ex:Table scan and Index scan
+  |
+Executed
+
+anonymous Query every time followed Parssed/Optimized/Executed
+Then next time we required only excution in procedure 
+
+5)Can be invoke from front-end application Procedures/Function can be called from front end application like
+ java,.Net.....etc
+
+Stored Procedure
+_________________
+May or May not return a value bt Function Return a value
+A Procedure is a named TSQL block that accepts some input, perform some operations on database and
+ may or may not return a value 
+
+--> Procedures are created to perform one/more DML operations over database
+
+Syntax:
+
+Create Procedure <Name>
+Parameters if any
+As
+Statement
+
+Parameters:
+----------
+We can declare parameters and we can pass values to parameters
+
+int add(int a, int b)//Formal parameters
+{
+ return(a+b)
+}
+
+Main()
+k=add(x,y)//Actual Parameters
+
+-->Parameters are two types
+1)Formal Parameters
+2)Actual Parameters
+
+-->Parameters declare while creating procedure are called formal Parameters
+-->Parameters used while calling Procedure are called actual Parameters
+
+Formal Actual Parameters are 2 types
+
+1)Input
+2)OutPut
+
+Input: Always returns a value,Default,Read only
+Output: Always sends a value,Write only
+
+
+Example:
+
+Create Procedure to increment specific Employee sal by specifi amount?
+
+Parameters and variables are declared prefix "@" symbol
+
+Example:
+---------
+
+select *from EMP
+
+create procedure update_salary
+@eno int,
+@amt money
+As
+update EMP set SAL=SAL+@amt where EMPNO=@eno
+
+
+Procedure created(Parsed+Optimized)
+Procedures can be executed from(SSMS(SQL server Management Studio),Another TSQL(Transact Staructured Query
+ Language ) Block)Front End
+
+
+
+Create Procedure to increment specific Employee sal by Specific amount after increment send the update sal to
+Calling Program
+
+create Procedure update_salary
+@eno int,@amt money,@newsal money output
+As
+update EMP set SAL=SAL+@amt where EMPNO=@eno
+
+select @newsal = sal from EMP where EMPNO=@eno
+
+declare @s money
+Execute update_salary 7369,1000,@s output
+Print @s
+
+Declaring Parameters with default value:-
+---------------------------------------
+Paraeters can be declare with default value as fallow
+
+	eg: @x int = 100
+
+while calling Procedure if we skip value of Parameters than sql server assigns default values
+
+alter procedure update_salary
+@eno int,
+@amt money=500,
+@newsal money output
+as
+update EMP set SAL=SAL+@amt where EMPNO=@eno
+select @newsal = sal from EMP where EMPNO=@eno
+
+Method1:
+declare @s money
+execute update_salary 7369,default,@s output
+Print @s
+
+Method2:
+
+declare @a money
+execute update_salary @eno=7369,@newsal=@a output
+print @a
+
+Accounts
+--------
+Accno   sal
+100	10,000
+101	20,000
+
+Create a Procedure for money withdrawl after withdrawl return bal to calling program..
+--------------------------------------------------------------------------------------
+
+create table accounts(accno int, bal money)
+insert into accounts values(100,10000),(101,20000)
+select *from accounts
+
+
+create procedure debit
+@acno int,
+@amt money,
+@newbalance money output
+as
+declare @bal money
+select @bal = bal from accounts
+where accno = @acno
+if @amt>@bal
+raiserror('insufficient bal',15,1)
+else
+begin
+update accounts set bal=bal-@amt where accno=@acno
+select @newbalance = bal from accounts where accno=@acno
+end 
+
+declare @b money
+execute debit 100,4000,@b output
+print @b
+
+
+create procedure to insert data into emp77 table
+-------------------------------------------------
+
+create table emp77
+(
+eno int primary key,
+ename varchar(10) not null,
+sal money check(sal>=2000)
+)
+
+create procedure insert_emp77
+@eno int,
+@name varchar(10),
+@sal money,
+@msg varchar(100) output
+as
+begin try
+insert into emp77 values(@eno,@name,@sal)
+set @msg ='record inserted'
+end try
+begin catch
+set @msg = ERROR_MESSAGE()
+end catch
+
+declare @s varchar(100)
+execute insert_emp77 1,'A',5000,@s output
+print @s
+
+select *from emp77
+
+
+User Define functons:
+--------------------
+a function created by user are called user define function when 
+pre-defined function not meeting our recuriments we created our own function
+
+ Afunction is also a named TSQL block that accept some input, perform some operation must return a value
+
+Functions are created
+
+1)Calculations
+2) to fetch value from database
+
+Create function<Name>(Parameters if any)
+Returns<type>
+As
+Begin
+Statemt
+Return<Expr>
+End
+
+create Function AddNum(@a int, @b int)Returns int
+as
+Begin
+Return(@a+@b)
+End
+
+Functions can be wxecuted
+
+1)From SQL Command
+2)another tsql block
+3)front-end applications
+
+Select LEN('Helo')//Predefined
+select DBO.ADDNUM(100,200) //300
+
+create function AddNum(@a int,@b int)Returns int
+as
+begin
+Return(@a+@b)
+End
+
+select dbo.AddNum(100,200)
+
+Create Function that Accepts Account number and Returns Balance?
+-----------------------------------------------------------------
+
+Create function GetBal(@a int)returns money
+as
+begin
+declare @bal money
+Select @bal=bal from accounts where accno=@a
+return @bal
+end
+
+
+select dbo.GetBal(100)
+
+Create a function that accepts accno and check weather account exist or not
+----------------------------------------------------------------------------
+create function Check_acct(@a int) returns tinyint
+as
+begin
+declare @cnt int, @x tinyint
+select @cnt=COUNT(*) from accounts where accno=@a
+if @cnt=1
+   set @x=1
+   else
+   set @x=0
+   return @x
+
+select dbo.Check_acct(100)//1
+select dbo.Check_acct(999)//0
+
+
+Functions are 2 types
+---------------------
+1)scalar valued function-->returns 1 value
+2)Table valued function--->returns multiple values
+
+Scalar valued functions:
+-----------------------
+these functions returns one value
+returns type of these functions must be scalar type like int, tinyint
+
+Table valued functions:
+-----------------------
+These functions rerurns group of rows are called table valued functions
+return type of these function must be table and return expression must be select statement
+
+Syntax
+------
+
+Create Function <Name>(Parameters if any)Returns Table
+As
+Returns(Select Statemet)
+
+create function getemplist(@d int) returns Table
+as
+Return(select *from EMP 
+			where DEPTNO=@d
+)
+
+select *from dbo.getemplist(20)
+
+
+-->Table value functions are invoked in from clause of the select statement
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+

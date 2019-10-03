@@ -1,0 +1,70 @@
+What is dot net(Developers platform)
+
+.net Framework :.net is network enabled technology which provide the facility to develop run and deploy
+ the .net based application .net also provide the interoperbility between different platforms
+
+.net is developed by microsoft
+
+To develop application we need visual studio Vs is called IDE(Integrated development environment)
+
+Different .net versions
+
+the first version of .net framework released 2002 the version was called .net framework 1.0
+
+the .Net framework has come a long way since then and the current version is 4.7.1 CLR(4) Vs2019 is latest IDE
+
+what is OOPS
+ 
+object oriented programming language oops mainly works on classes and objects
+
+important concepts of oops
+class
+objects
+Inheritance:its provides the reusability
+polymorphism: this is all about behaviour in multiple ways
+abstraction: Hiding the complexity and provide with a set of interfaces the functionalities
+methods are good example for abstractions
+encapsulation:hiding the date by wrapping them under a container known as class
+
+what is class
+
+class is collection of data members and memberfunction like blue print
+
+object :is the instace the of the class .It allocated the memory to access the members of class
+
+classname objectname  =  new classname
+
+
+what are naming convensions of class
+
+we connot create the class name with number
+we connot use special character
+but we can use thee class_employee
+
+by default
+
+ public class program
+{
+ public int age = 20;
+}
+
+program obj = new program();
+
+by default class in internal
+
+5types of access modifiers
+public access any where
+private access with in the class same class only
+internal: same project only , same dll, same library, with in the project (by creating instance we connot access but creating inheritance its accessable)
+protected: under a class can be accessed only from their child class i.e non-child class can't consume them.
+protected internal will dual scope :
+
+in same project we can access the the pro internal member by creating the object as well as by child class
+
+
+
+
+
+
+
+

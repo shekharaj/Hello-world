@@ -1,0 +1,542 @@
+Curd operations with enity 
+--------------------------
+create database EFDBFirstDatabase
+go
+
+use EFDBFirstDatabase
+go
+
+create table Categories(
+CategoryID bigint primary key identity(1,1),
+CategoryName varchar(40))
+go
+
+create table Brands(
+BrandID bigint primary key identity(1,1),
+BrandName varchar(40))
+go
+
+create table Products(
+ProductID bigint primary key identity(1,1),
+ProductName varchar(50),
+Price decimal(15,2),
+DateOfPurchase datetime,
+AvailabilityStatus varchar(50),
+CategoryID bigint references Categories(CategoryID) on delete set null,
+BrandID bigint references Brands(BrandID) on delete set null,
+Active bit default(1))
+go
+
+_LayoutPage1.cshtml
+-------------------
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/Content/bootstrap.css" rel="stylesheet"/>
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/umd/popper.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm bg-info navbar-dark" >
+        <a class="navbar-brand" href="#">Company</a>
+        <div class="navbar-nav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/Home/Index">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/Categories/Index">Categories</a></li>
+                <li class="nav-item"><a class="nav-link" href="/Brand/Index">Brand</a></li>
+                <li class="nav-item"><a class="nav-link" href="/Products/Index">Products</a></li>
+            </ul>
+        </div>
+        <div class="col-3 text-white">
+            @ViewBag.Message
+        </div>
+    </nav>
+    <div class="container-fluid">
+    @RenderBody()
+    </div>
+</body>
+</html>
+
+Brandscontroller.cs
+---------------------
+using EFDbFirstApproachExample1.Models;
+public class BrandController : Controller
+    {
+        EFDBFirstDatabaseEntities db = new EFDBFirstDatabaseEntities();
+        // GET: Brand
+        public ActionResult Index()
+        {
+            List<Brand> brands = db.Brands.ToList();
+            return View(brands);
+        }
+    }
+
+CategoriesController.cs
+------------------------
+using EFDbFirstApproachExample1.Models;
+public class CategoriesController : Controller
+    {
+        EFDBFirstDatabaseEntities db = new EFDBFirstDatabaseEntities();
+        // GET: Categories
+        public ActionResult Index()
+        {
+           List<Category>categories=  db.Categories.ToList();
+            return View(categories);
+        }
+    }
+
+
+HomeController.cs
+-----------------
+
+ public class HomeController : Controller
+    {
+        // GET: Home
+        public ActionResult Index()
+        {
+            return View();
+        }
+    }
+
+Products.cs
+------------
+
+using System.Data.Entity;
+using EFDbFirstApproachExample1.Models;
+
+namespace EFDbFirstApproachExample1.Controllers
+{
+    public class ProductsController : Controller
+    {
+        EFDBFirstDatabaseEntities db = new EFDBFirstDatabaseEntities();
+        // GET: Products
+        public ActionResult Index(string search="")
+        {
+            ViewBag.search = search;
+            List<Product> products = db.Products.Where(temp=>temp.ProductName.Contains(search)).ToList();
+            return View(products);
+        }
+        public ActionResult Details(long id)
+        {
+            Product product = db.Products.Find(id);
+            return View(product);
+        }
+        public ActionResult create()
+        {
+            ViewBag.Categories = db.Categories.ToList();
+            ViewBag.Brands = db.Brands.ToList();
+            return View();
+        }
+        [HttpPost]//attribute
+        public ActionResult Create(Product product)
+        {
+            if(Request.Files.Count>=1)
+            {
+                var file = Request.Files[0];
+                var imgBytes = new Byte[file.ContentLength - 1];
+                file.InputStream.Read(imgBytes, 0, file.ContentLength);
+                var base64String = Convert.ToBase64String(imgBytes, 0, imgBytes.Length);
+                product.Photo = base64String;
+            }
+            db.Products.Add(product);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+        public ActionResult Edit(long id)
+        {
+            ViewBag.Categories = db.Categories.ToList();
+            ViewBag.Brands = db.Brands.ToList();
+            Product product = db.Products.Find(id);
+            return View(product);
+        }
+        [HttpPost]
+        public ActionResult Edit(Product product)
+        {
+            db.Entry(product).State = EntityState.Modified;
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+        public ActionResult Delete(long id)
+        {
+            Product exstingProduct = db.Products.Where(temp => temp.ProductID == id).FirstOrDefault();
+            return View(exstingProduct);
+        }
+        [HttpPost]
+        public ActionResult Delete(Product product)
+        {
+            Product product1 = db.Products.Find(product.ProductID);
+            db.Products.Remove(product1);
+            db.SaveChanges();
+            // Product exstingProduct = db.Products.Where(temp => temp.ProductID == id).FirstOrDefault();
+            return RedirectToAction("Index");
+        }
+
+    }
+}
+
+
+Brands.cshtml
+--------------
+@model List<EFDbFirstApproachExample1.Models.Brand>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+<h2>Brands</h2>
+<table class="table">
+    <tr>
+        <th>Brand ID</th>
+        <th>Brand Name</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.BrandID</td>
+            <td>@item.BrandName</td>
+        </tr>
+
+    }
+    </table>
+
+
+Categories.cshtml
+-----------------
+@model List<EFDbFirstApproachExample1.Models.Category>
+@{
+    ViewBag.Title = "Brands";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+<h2>Categories</h2>
+<table class="table">
+    <tr>
+        <th>Category ID</th>
+        <th>Category Name</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.CategoryID</td>
+            <td>@item.CategoryName</td>
+        </tr>
+
+    }
+
+
+</table>
+
+Home.cshtml
+-----------
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+<h2>Home</h2>
+
+ProductsView
+------------
+Create.cshtml
+
+
+@{
+    ViewBag.Title = "create";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+    <h2>Create Product</h2>
+    <form action="/Products/create" method="post">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="ProductName">ProductName</label>
+                <input type="text" class="form-control" id="ProductName" name="ProductName" placeholder="ProductName">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="Price">Price</label>
+                <input type="text" class="form-control" id="Price" name="Price" placeholder="Price">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="DateOfPurchase">Date Of Purchase</label>
+                <input type="date" class="form-control" id="DateOfPurchase" name="DateOfPurchase" placeholder="DateOfPurchase">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="AvailabilityStatus">Availability Status</label>
+                <select class="form-control" id="AvailabilityStatus" name="AvailabilityStatus" placeholder="AvailabilityStatus">
+                    <option value="">Please Select</option>
+                    <option value="InStock">In Stock</option>
+                    <option value="OutOfStock">Out Of Stock</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label for="CategoryId">Category</label>
+                <select class="form-control" id="CategoryID" name="CategoryID">
+                    <option value="">Please Select</option>
+                    @foreach (var cat in ViewBag.Categories)
+                    {
+                        <option value="@cat.CategoryID">@cat.CategoryName</option>
+                    }
+                </select>
+
+            </div>
+            <div class="form-group col-6">
+                <label for="BrandID">Brand</label>
+                <select class="form-control" id="BrandID" name="BrandID">
+                    <option value="">Please Select</option>
+                    @foreach (var cat in ViewBag.Brands)
+                    {
+                        <option value="@cat.BrandID">@cat.BrandName</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="Image">Image</label>
+            <input type="file" class="form-control-file" id="Image" name="Photo" />
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="Active" name="Active" value="true">
+                <label class="form-check-label" for="Active">
+                    Active
+                </label>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success">Create</button>
+        <a class="btn btn-danger" href="/Products/Index">Cancel</a>
+    </form>
+
+Details.cshtml
+--------------
+
+@model EFDbFirstApproachExample1.Models.Product
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+<h2>Product Details</h2>
+<table class="table">
+    <tr>
+        <th>Product ID</th>
+        <td>@Model.ProductID</td>
+    </tr>
+    <tr>
+        <th>Product Name</th>
+        <td>@Model.ProductName</td>
+    </tr>
+    <tr>
+        <th>Price</th>
+        <td>@Model.Price.Value.ToString("C")</td>
+    </tr>
+    <tr>
+        <th>Date of Purchase</th>
+        <td>@Model.DateOfPurchase.Value.ToString("d/M/yyyy")</td>
+    </tr>
+    <tr>
+        <th>Brand</th>
+        <td>@Model.Brand.BrandName</td>
+    </tr>
+    <tr>
+        <th>Category</th>
+        <td>@Model.Category.CategoryName</td>
+    </tr>
+    <tr>
+        <th>Active</th>
+        <td>@Model.Active</td>
+    </tr>
+</table>
+
+<a href="/products/index">Back to Products</a>
+
+
+Delete.cshtml
+-------------
+@model EFDbFirstApproachExample1.Models.Product
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+<h2>Delete Products</h2>
+<form action="/Products/Delete/@Model.ProductID" method="post">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="ProductName">Product Name</label>
+            <input type="hidden" name="ProductID" value="@Model.ProductID" />
+            @Model.ProductName
+        </div>
+        <div class="form-group col-md-6">
+            <label for="Price">Price</label>
+            @Model.Price
+        </div>
+    </div>
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a class="btn btn-danger" href="/Products/Index">Cancel</a>
+</form>
+
+Edit.cshtml
+-----------
+@model EFDbFirstApproachExample1.Models.Product
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+<h2>Edit</h2>
+<form action="/Products/Edit" method="post" enctype="multipart/form-data">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="ProductName">ProductName</label>
+            <input type="hidden" name="ProductID" value="@Model.ProductID" />
+            <input type="text" class="form-control" id="ProductName" name="ProductName" placeholder="ProductName" value="@Model.ProductName">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="Price">Price</label>
+            <input type="text" class="form-control" id="Price" name="Price" placeholder="Price" value="@Model.Price">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="DateOfPurchase">Date Of Purchase</label>
+            <input type="date" class="form-control" id="DateOfPurchase" name="DateOfPurchase" placeholder="Date Of Purchase" value="@Model.DateOfPurchase.Value.ToString("yyyy-MM-dd")">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="AvailabilityStatus">Availability Status</label>
+            <input type="text" class="form-control" id="AvailabilityStatus" name="AvailabilityStatus" placeholder="AvailabilityStatus" value="@Model.AvailabilityStatus">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-6">
+            <label for="CategoryId">Category</label>
+            <select class="form-control" id="CategoryID" name="CategoryID">
+                <option value="">Please Select</option>
+                @foreach (var cat in ViewBag.Categories)
+                {
+                    if (cat.CategoryID == Model.CategoryID)
+                    {
+                        <option value="@cat.CategoryID" selected="selected">@cat.CategoryName</option>
+                    }
+                    else
+                    {
+                        <option value="@cat.CategoryID" selected="selected">@cat.CategoryName</option>
+                    }
+
+                }
+            </select>
+
+        </div>
+        <div class="form-group col-6">
+            <label for="BrandID">Brand</label>
+            <select class="form-control" id="BrandID" name="BrandID">
+                <option value="">Please Select</option>
+                @foreach (var br in ViewBag.Brands)
+                {
+                    if (br.BrandID == Model.BrandID)
+                    {
+                        <option value="@br.BrandID" selected="selected">@br.BrandName</option>
+                    }
+                    else
+                    {
+                        <option value="@br.BrandID">@br.BrandName</option>
+                    }
+                }
+            </select> 
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="Image">Image</label>
+        <input type="file" class="form-control-file" id="Image" name="Photo"/>
+    </div>
+    <div class="form-group">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="Active" name="Active" checked="@Model.Active" value="true">
+            <label class="form-check-label" for="Active">
+                Active
+            </label>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success">Create</button>
+    <a class="btn btn-danger" href="/Products/Index">Cancel</a>
+
+</form>
+
+
+Index.cshtml
+------------
+
+@model List<EFDbFirstApproachExample1.Models.Product>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+<h2>Products</h2>
+<a href="/Products/create">Create</a>
+<form class="form-inline" action="/Products/Index">
+    <label for="search">Search</label>
+    <input type="search" class="form-control" id="search" name="search" placeholder="Search" value="@ViewBag.search" >
+    <button type="submit" class="btn btn-primary">GO</button>
+</form>
+<table class="table">
+    <tr>
+        <th style="width:5%">
+            Photo
+        </th>
+        <th>ProductID</th>
+        <th>Product Name</th>
+        <th>Price</th>
+        <th>Date of Purchase</th>
+        <th>Availability Status</th>
+        <th>CategoryID</th>
+        <th>BrandID</th>
+        <th>Active</th>
+    </tr>
+    @foreach(var item in Model)
+    {
+<tr>
+    <td>
+        <img src="data:image;base64,@item.Photo" width="100px"/>
+    </td>
+    <td>@item.ProductID</td>
+    <td>@item.ProductName</td>
+    <td>@item.Price.Value.ToString("C")</td>
+    <td>@item.DateOfPurchase.Value.ToString("d/M/yyyy")</td>
+    <td>@item.AvailabilityStatus</td>
+    <td>@item.Category.CategoryName</td>
+    <td>@item.Brand.BrandName</td>
+    <td>@item.Active</td>
+    <td>
+        <a href="/Products/Details/@item.ProductID">Details</a>
+        <a href="/Products/Edit/@item.ProductID">Edit</a>
+          <a href="/Products/Delete/@item.ProductID">Delete</a>    
+    </td>
+</tr>
+    }
+
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

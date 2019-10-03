@@ -1,0 +1,184 @@
+MvcAjaxDemo===My project name is"MVCBasicTutorial"
+------------
+Product.cs
+
+ public class Product
+    {
+        public int ProductId { get; set; }
+        public string Name { get; set; }
+        public double price { get; set; }
+    }
+
+ProductsData.cs
+----------------
+
+public class ProductsData
+    {
+        public IEnumerable<Product>ProductsList
+        {
+            get
+            {
+                List<Product> products = new List<Product>
+                {
+                    new Product{ ProductId=1,Name="Nike",price=200},
+                    new Product{ ProductId=2,Name="bat",price=200},
+                    new Product{ ProductId=3,Name="bal",price=200},
+                    new Product{ ProductId=4,Name="shoe",price=200},
+
+                };
+                return products;
+            }
+        }
+    }
+
+_Grid
+------
+@model IEnumerable<MVCBasicTutorial.Models.Product>
+    @foreach(var items in Model)
+    {
+        <tr>
+            <td>@items.ProductId</td>
+            <td>@items.Name</td>
+            <td>@items.price</td>
+        </tr>
+    }
+
+
+Controller
+
+----------------
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using MVCBasicTutorial.Models;
+using System.Threading;
+
+namespace MVCBasicTutorial.Controllers
+{
+    public class HomeController : Controller
+    {
+        // GET: Home
+        ProductsData db = new ProductsData();
+        public ActionResult Index()
+        {
+            return View();
+        }
+        public PartialViewResult OrderById()
+        {
+            Thread.Sleep(5000);
+            List<Product> products = db.ProductsList.OrderBy(x => x.ProductId).ToList();
+            return PartialView("_Grid",products);
+        }
+        public PartialViewResult OrderByName()
+        {
+            Thread.Sleep(5000);
+            List<Product> products = db.ProductsList.OrderBy(x => x.Name).ToList();
+            return PartialView("_Grid", products);
+        }
+        public PartialViewResult OrderByPrice()
+        {
+            Thread.Sleep(5000);
+            List<Product> products = db.ProductsList.OrderBy(x => x.price).ToList();
+            return PartialView("_Grid", products);
+        }
+    }
+}
+
+Index.html
+---------
+
+    <script src="~/Scripts/jquery-3.3.1.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+<script>
+    function OnBegin() {
+        alert("Products will be sorted");
+    }
+    function OnComplete{
+        alert("sorted successfull");
+    }
+    function OnSuccess() {
+        alert("Results will be displayed in table");
+    }
+</script>
+<h2>ProductIndex</h2>
+<table class="table table-hover">
+<thead>
+    <tr>
+        <th>
+            @Ajax.ActionLink("ProductId", "OrderById", new AjaxOptions()
+       {
+           HttpMethod = "Get",
+           UpdateTargetId = "grid",
+          InsertionMode=InsertionMode.Replace,
+          LoadingElementId = "Loading",
+          LoadingElementDuration = 5000,
+          OnBegin = "OnBegin",
+          OnComplete = "OnComplete",
+          OnSuccess = "Onsuccess"
+       })
+        </th>
+        <th>
+            @Ajax.ActionLink("Name", "OrderByName", new AjaxOptions()
+       {
+           HttpMethod = "Get",
+           UpdateTargetId = "grid",
+          InsertionMode = InsertionMode.Replace,
+          LoadingElementId = "Loading",
+          LoadingElementDuration = 5000,
+          OnBegin = "OnBegin",
+          OnComplete = "OnComplete",
+          OnSuccess = "Onsuccess"
+       })
+        </th>
+        <th>
+            @Ajax.ActionLink("Price", "OrderByPrice", new AjaxOptions()
+       {
+           HttpMethod = "Get",
+           UpdateTargetId = "grid",
+          InsertionMode = InsertionMode.Replace,
+          LoadingElementId = "Loading",
+          LoadingElementDuration = 5000,
+          OnBegin = "OnBegin",
+          OnComplete = "OnComplete",
+          OnSuccess = "Onsuccess"
+       })
+        </th>
+    </tr>
+</thead>
+    <tbody id="grid"></tbody>
+    <tfoot>
+      <tr><td colspan="3" align="center">
+          <div style="display:none"id="Loading"></div>
+          <div>
+              <img src="~/Image/loading.jpg" width="40" height="40" />
+              page loading Please wait......
+          </div>
+          Page Lase Request on:@DateTime.Now.ToString()
+          </td></tr>
+    </tfoot>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

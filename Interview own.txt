@@ -1,0 +1,25 @@
+What is view State?
+What is Session 
+What is caching
+
+What is Diff between Union and Union all?
+What is storedprocedure?
+
+Union: This will remove duplicate values
+------
+The union command is used to select related information from two tables, Which is like a join command
+With Union, Only distinct values are selected
+
+union all: This will repeat values,it gives faster result
+---------
+Union All will not eliminate duplicate values
+Example
+
+Table 1 : First,Second,Third,Fourth,Fifth
+Table 2 : First,Second,Fifth,Sixth
+ 
+Result Set
+
+UNION: First,Second,Third,Fourth,Fifth,Sixth (This will remove duplicate values)
+UNION ALL: First,First,Second,Second,Third,Fourth,Fifth,Fifth,Sixth,Sixth (This will repeat values)
+ 

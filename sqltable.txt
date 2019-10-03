@@ -1,0 +1,20 @@
+1)one table for each object
+
+2)one to many
+
+one will become master table
+many will become child table
+
+Departmant:Employee
+
+1:m-->true
+
+2)many to many
+
+both the objects will become a masters
+
+Student and courese
+
+one student joined many course
+
+many courses take 1 course

@@ -1,0 +1,129 @@
+What is C sharp?
+ c sharp is an object oriented programming language developed by m/s
+
+Diff b/w C++ and C sharp
+
+CSharp: c sharp is higher level programming language similar to java
+------
+C++	: C++ low level programming language it is not similar to java
+-------
+
+Class: is collection of Data members and member functions
+----
+String:Belongs to system namesapace 
+------
+ string s = "shekar";
+s= string.Concat(s,"Goud")
+
+String Builder Belongs to System.text namespace
+--------------
+Stringbuilder sb = new stringbuilder();
+sb.Append("shekar");
+sb.Append("Goud");
+
+static function
+--------------
+has the keyword static,it can be accessed without creating object
+
+Sealed class: a Sealed class is a class which cannot be inherited.
+------------a sealed class is a public as well as private
+
+
+public class A
+ {
+  Public void Fun()
+  {
+   }
+}
+
+//cannot derived
+ public class B:A
+ {
+  Public static void Fun()
+  {
+   }
+ }
+
+public class c
+ {
+  Public static void Fun()
+  {
+   //Valid
+   A.a = new A();
+   a.Fun();
+   }
+ }
+
+internali:
+---------
+
+An internal class ia class which cannot be used outside its Assembly
+
+internal Class a
+{
+ public void Fun()
+ {
+
+  }
+}
+//Valid
+ public class B:A
+ {
+  Public static void Fun()
+  {
+   }
+  }
+
+public class c
+{
+ public static void Fun()
+ {
+  A a = new A();
+   a.Fun();
+  }
+ }  
+
+Abstract class:
+
+An Abstrace class is a special class which is majorly used for inheritance and it cannot be instantited
+abstract members are simply declared and are defined in the class derived the abstract class
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

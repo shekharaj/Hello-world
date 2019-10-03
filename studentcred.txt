@@ -1,0 +1,124 @@
+select *from student5
+
+/*Read*/
+create Procedure GetStudentDetails
+As
+ select * from Student5
+Go
+/*Insert*/
+Create Procedure AddStudentDetails1
+(
+@SName varchar(50),
+@DOB datetime,
+@DOJ datetime,
+@FName varchar(50),
+@WClass Varchar(50),
+@Section Varchar(50),
+@Address Varchar(50),
+@Gender Varchar(50),
+@Fee money
+)
+As
+Insert into Student5(SName,DOB,DOJ,FName,WClass,Section,Address,Gender,Fee)Values(@SName,@DOB,@DOJ,@FName,@WClass,@Section,@Address,@Gender,@Fee)
+Go
+
+
+/*Update*/
+Create Procedure UpdateStudentDetails
+(
+@StudentId int,
+@SName varchar(50),
+@DOB datetime,
+@DOJ datetime,
+@FName varchar(50),
+@WClass Varchar(50),
+@Section Varchar(50),
+@Address Varchar(50),
+@Gender Varchar(50),
+@Fee money
+) 
+As
+Update Student5 set SName=@SName,DOB=@DOB,DOJ=@DOJ,FName=@FName,WClass=@WClass,Section=@Section,Address=@Address,Gender=@Gender,Fee=@Fee where StudentId=@StudentId
+Go
+
+/*Delete*/
+Create procedure DeleteStudentDetails(@StudentId int)
+As
+Delete From Student5 where StudentId=@StudentId
+Go
+
+
+Student.cs
+-----------
+  public class Student
+    {
+        public int StudentId { get; set; }
+        public string SName { get; set; }
+        public Nullable<System.DateTime> DOB { get; set; }
+        public Nullable<System.DateTime> DOJ { get; set; }
+        public string FName { get; set; }
+        public string WClass { get; set; }
+        public string Section { get; set; }
+        public string Address { get; set; }
+        public string Gender { get; set; }
+        public Nullable<decimal> Fee { get; set; }
+    }
+
+
+BusinessLayer.cs
+----------------
+ public class Businesslayer
+    {
+        string strcon = ConfigurationManager.ConnectionStrings["Democonnection"].ToString();
+        SqlConnection con;
+        SqlCommand cmd;
+        // **************** ADD NEW STUDENT *********************
+        public bool AddStudent(Student smodel)
+        {
+          
+            SqlCommand cmd = new SqlCommand("GetStudentDetails", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@SName", smodel.SName);
+            cmd.Parameters.AddWithValue("@DOB", smodel.DOB);
+            cmd.Parameters.AddWithValue("@DOJ", smodel.DOJ);
+            cmd.Parameters.AddWithValue("@FName", smodel.FName);
+            cmd.Parameters.AddWithValue("@WClass", smodel.WClass);
+            cmd.Parameters.AddWithValue("@Section", smodel.Section);
+            cmd.Parameters.AddWithValue("@Address", smodel.Address);
+            cmd.Parameters.AddWithValue("@Gender", smodel.Gender);
+            cmd.Parameters.AddWithValue("@Fee", smodel.Fee);
+
+            con.Open();
+            int i = cmd.ExecuteNonQuery();
+            con.Close();
+
+            if (i >= 1)
+                return true;
+            else
+                return false;
+        }
+       
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

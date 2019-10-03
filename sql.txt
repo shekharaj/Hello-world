@@ -1,0 +1,63 @@
+Select Distinct statement is used to return only distinct(different)values
+
+1)SELECT Country FROM Customers;//91
+2)SELECT DISTINCT Country FROM Customers;//21Country names
+3)SELECT COUNT(DISTINCT Country) FROM Customers;//21 number
+4)SELECT Count(*) AS DistinctCountries
+FROM (SELECT DISTINCT Country FROM Customers);//21
+
+SQLWhere:
+where clause is used to filter records
+Operators in the where clause:
+
+=,>,<,>=,<=,<>(!),BetWeen,Like,IN
+
+1)SELECT * FROM Products
+WHERE Price = 18;
+2)SELECT * FROM Products
+WHERE Price > 30;
+3)SELECT * FROM Products
+WHERE Price < 30;
+4)SELECT * FROM Products
+WHERE Price >= 30;
+5)SELECT * FROM Products
+WHERE Price <= 30;
+6)SELECT * FROM Products
+WHERE Price <> 18;
+7)SELECT * FROM Products
+WHERE Price BETWEEN 50 AND 60;
+8)SELECT * FROM Customers
+WHERE City LIKE '%s'; //name ends with s
+9)SELECT * FROM Customers
+WHERE City LIKE 's%'; //name starts with s
+10)SELECT * FROM Customers
+WHERE City IN ('Paris','London');
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

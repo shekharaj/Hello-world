@@ -1,0 +1,391 @@
+Custom Registration And Login ASP.NetMVC and Visual Studio
+----------------------------------------------------------
+Add New Project "RegisrationLogin"
+Add Sql Server
+create Database "UserDB"
+In "UserDB" database goto Security add  schemas
+Right click on Schema-->Add New Schema-->
+Schema Name:User
+Schema owner:dbo
+
+Now Right click on table add table
+Userid primarykey
+FirstName Varchar(50)
+LastName varchar(50)
+Email Varchar(50)
+Password Varchar(50)
+ConfirmPassword varchar(50)
+CreatedOn datetime
+
+Goto "Propertices" 
+Table Name:Users
+Schema:User
+Identity Column: UserId
+
+In Visual Create "DBModel" folder use Database first approch(EF) load model class and contexclass
+
+In "Models" add UserModel
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace RegistrationLogin.Models
+{
+    public class UserModel
+    {
+
+        public string UserId { get; set; }
+        [Required(AllowEmptyStrings =false,ErrorMessage ="First Name is required")]
+        [Display(Name="First Name:")]
+        public string FirstName { get; set; }
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Last Name is required")]
+        [Display(Name = "Last Name:")]
+        public string LastName { get; set; }
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Email  is required")]
+        [Display(Name = "Email:")]
+        public string Email { get; set; }
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Password Name is required")]
+        [Display(Name = "Password")]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Confirm-password Name is required")]
+        [Display(Name = "Confirm Password")]
+        [DataType(DataType.Password)]
+        public string ConfirmPassword { get; set; }
+
+        public DateTime CreatedOn { get; set; }
+
+        public string SuccessMessage { get; set; }
+
+    }
+}
+
+Add Two Controllers and Views
+-----------------------------
+HomeController.cs
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace RegistrationLogin.Controllers
+{
+    public class HomeController : Controller
+    {
+        // GET: Home
+        public ActionResult Index()
+        {
+            return View();
+        }
+        public ActionResult About()
+        {
+            return View();
+        }
+        public ActionResult Contact()
+        {
+            return View();
+        }
+    }
+}
+ 
+AccountController.cs
+--------------------
+using RegistrationLogin.Models;
+using RegistrationLogin.DBModel;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace RegistrationLogin.Controllers
+{
+    public class AccountController : Controller
+    {
+        //create the object of UserDBEnities
+
+        UserDBEntities userDBEntities = new UserDBEntities();
+        // GET: Account
+        public ActionResult Index()
+        {
+            return View();
+        }
+        public ActionResult Register()
+        {
+           UserModel objUserModel = new UserModel();
+            return View(objUserModel);
+        }
+        [HttpPost]
+        public ActionResult Register(UserModel objUserModel)
+        {
+            if(ModelState.IsValid)
+            {
+                User objUser = new DBModel.User();
+                objUser.CreatedOn = DateTime.Now;
+                objUser.Email = objUserModel.Email;
+                objUser.FirstName = objUserModel.FirstName;
+                objUser.LastName = objUserModel.LastName;
+                objUser.Password = objUserModel.Password;
+                userDBEntities.Users.Add(objUser);
+                userDBEntities.SaveChanges();
+                objUserModel = new UserModel();
+                objUserModel.SuccessMessage = "User Successfully Added";
+                return RedirectToAction("Index","Home");
+            }
+            return View();
+        }
+        public ActionResult Login()
+        {
+            LoginModel loginModel = new LoginModel();
+            return View(loginModel);
+        }
+        [HttpPost]
+        public ActionResult Login(LoginModel loginModel)
+        {
+            if (ModelState.IsValid)
+            {
+                if (userDBEntities.Users.Where(m => m.Email == loginModel.Email && m.Password == loginModel.Password).FirstOrDefault()==null)
+                {
+                    ModelState.AddModelError("Error", "Invalid Password and Message");
+                    return View();
+                }
+                else
+                {
+                    Session["Email"] = loginModel.Email;
+                    RedirectToAction("Index", "Home");
+                }
+         
+            }
+            return View();
+        }
+        public ActionResult Logout()
+        {
+            Session.Abandon();
+            return View("Login");
+        }
+    }
+}
+
+goto _Layout.cshtml
+-------------------
+Add your UI following changes
+
+<div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>
+                        @Html.ActionLink("Home", "Index", "Home", null, null)
+                    </li>
+                    <li>
+                        @Html.ActionLink("Contact", "Contact", "Home", null, null)
+                    </li>
+                    <li>
+                        @Html.ActionLink("About", "About", "Home", null, null)
+                    </li>
+                </ul>
+                @Html.Partial("_loginPartial")
+            </div>
+
+
+AddPartial View _loginPartial
+------------------------------
+@if (Session["Email"] == null)
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li>
+            @Html.ActionLink("Register", "Register", "Account", null, null)
+        </li>
+        <li>
+            @Html.ActionLink("Login", "Login", "Account", null, null)
+        </li>
+    </ul>
+}
+else
+{
+<ul class="nav navbar-nav navbar-right">
+    <li>
+        @Html.ActionLink("Hi!"+Session["Email"], "Index", "Home", null, null)
+    </li>
+    <li>
+        @Html.ActionLink("Logout", "Logout", "Account", null, null)
+    </li>
+</ul>
+}
+
+
+Add Register.cshtml
+---------------------
+@model RegistrationLogin.Models.UserModel
+@{
+    ViewBag.Title = "Register";
+}
+    <fieldset>
+        <legend>
+            UserName
+        </legend>
+        
+        @using(Html.BeginForm("Register","Account",FormMethod.Post))
+        {
+    <table>
+        <tr>
+            <td>@Html.LabelFor(model => model.FirstName)</td>
+            <td>@Html.TextBoxFor(model => model.FirstName)</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>@Html.ValidationMessageFor(model => model.FirstName, null, new { @class = "text-danger" })</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(model => model.LastName)</td>
+            <td>@Html.TextBoxFor(model => model.LastName)</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>@Html.ValidationMessageFor(model => model.LastName, null, new { @class = "text-danger" })</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(model => model.Email)</td>
+            <td>@Html.TextBoxFor(model => model.Email)</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>@Html.ValidationMessageFor(model => model.Email, null, new { @class = "text-danger" })</td>
+        </tr>
+        <tr>
+            <td>
+            @Html.LabelFor(model => model.Password)
+            </td>
+            <td>
+            @Html.PasswordFor(model => model.Password)
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>@Html.ValidationMessageFor(model => model.Password, null, new { @class = "text-danger" })</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(model => model.ConfirmPassword)</td>
+            <td>@Html.PasswordFor(model => model.ConfirmPassword)</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>@Html.ValidationMessageFor(model => model.ConfirmPassword, null, new { @class = "text-danger" })</td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+                <table>
+                    <tr>
+                        <td><input type="submit" value="Register" /></td>
+                        <td><input type="submit" value="Reset" /></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            @*<td colspan="2">
+                @Html.LabelFor(model => model.SuccessMessage, null, new {@class="alert alert-success"})
+            </td>*@
+        </tr>
+    </table>
+        }
+
+    </fieldset>
+
+Loginmodel add in Models folder
+-------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.ComponentModel.DataAnnotations;
+
+namespace RegistrationLogin.Models
+{
+    public class LoginModel
+    {
+        [Required(ErrorMessage ="Email is Required")]
+        public string Email { get; set; }
+        [Required(ErrorMessage = "Email is Required")]
+        public string Password { get; set; }
+    }
+}
+
+Login.cshtml
+------------
+@model RegistrationLogin.Models.LoginModel
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2>Login</h2>
+<fieldset>
+    <legend>
+       User Login
+    </legend>
+    @using (Html.BeginForm("Login","Account",FormMethod.Post))
+    {
+<table>
+    <tr>
+        <td>@Html.LabelFor(model => model.Email)</td>
+        <td>@Html.TextBoxFor(model => model.Email)</td>
+    </tr>
+    <tr>
+        <td>
+        </td>
+        <td>@Html.ValidationMessageFor(model => model.Email,null,new {@class="text text-danger"})</td>
+    </tr>
+   
+    <tr>
+        <td>@Html.LabelFor(model => model.Password)</td>
+        <td>@Html.TextBoxFor(model => model.Password)</td>
+    </tr>
+    <tr>
+        <td>
+
+        </td>
+        <td>@Html.ValidationMessageFor(model => model.Password,null,new {@class="text text-danger"})</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>
+            <table>
+                <tr>
+                    <td>
+                        <input type="submit" value="Login" />
+                    </td>
+                    <td>
+                        <input type="Reset" value="Reset" />
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.ValidationMessage("Error",null,new {@class="text text-danger"})</td>
+    </tr>
+</table>
+    }
+</fieldset>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

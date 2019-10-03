@@ -1,0 +1,13 @@
+cookies can store user specif information on client's machine like when user last visited your site
+Basically cookies are a small text file sent by the web server and saved by the web browser on client's machine
+
+1)Persisent cookies-->harddisk
+2)Non-persistent cookes--> Temporary
+
+Autopost back is property of controls
+which enables the post back on the web control
+
+AutopostBack=true(a post back is sent immediately to the server)
+AutopostBack property is set to false, then no post back occurs.
+
+Every Web controls will have their own AutoPostBack property

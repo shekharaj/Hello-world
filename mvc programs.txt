@@ -1,0 +1,381 @@
+
+ProjectName:MvcApp
+Goto model Folder add newitem class "Employee"
+
+public class Employee
+{
+  public int EmployeeId{get; set;}
+  public string Name{get; set;}
+  public string Department{get; set;}
+}
+
+goto controller folder add "TestController"
+
+using MvcApp.Models;
+
+public ActionResult Index()
+{
+ List<Employee> EmployeeList = new List<Employee>()
+ Employee Employee = new Employee();
+ EmployeeList.Add(new Employee{EmloyeeID = 1, Name = "Ashish" Department = "IT"});
+ EmployeeList.Add(new Employee{EmloyeeID = 2, Name = "John" Department = "IT"});
+ EmployeeList.Add(new Employee{EmloyeeID = 3, Name = "Sara" Department = "IT"}); 
+ 
+ return View(EmployeeList);
+ }
+
+
+Add View For the Index action "Index.cshtml"
+
+@model IEnumerable<MvcApp.Model.Employee>
+
+<h1>Index<h1>
+<table>
+<tr>
+ <th>ID</th>
+ <th>Name</th>
+ <th>Department</th>
+</tr>
+<tbody>
+ @if(model!=null)
+ {
+  foreach(var items in Model)
+  {
+    <tr>
+       <td>items.EmployeeID</td>
+       <td>items.EmployeeName</td>
+       <td>items.EmployeeDepartment</td>
+	</tr>
+    }
+  }
+  </tbody>
+</table>
+
+
+-------------------------------------------------------------------------------------------------------------
+35) how to  create strongly typed views
+
+By using @model directive
+
+1)Create a new MVC core Project by Name "ModelDemo"
+2)Goto Models folder and add following classes "Products.cs"
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ModelDemo.Models
+{
+    public class Products
+    {
+        public int productId { get; set; }
+        public string Name { get; set; }
+        public double Price { get; set; }
+    }
+}
+
+In model "ProductsData"
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ModelDemo.Models
+{
+    public class ProductsData
+    {
+        List<Products> product = new List<Products>()
+        {
+            new Products{productId=1,Name="Sumsung",Price=25000 },
+            new Products{productId=2,Name="nike", Price=35000 },
+            new Products{productId=3,Name="bat",Price=26000 }
+
+        };
+        public IEnumerable<Products>ProductList
+        {
+            get
+            {
+                return product;
+            }
+        }
+    }
+}
+
+3)Add a new controller by name "ProductsController"
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using ModelDemo.Models;
+
+namespace ModelDemo.Controllers
+{
+    public class ProductsController : Controller
+    {
+        ProductsData db = new ProductsData();
+        public ViewResult Index()
+        {
+
+            return View(db.ProductList);
+        }
+        public ViewResult Details(int id)
+        {
+            Products product = db.ProductList.Single(x=>x.productId==id);
+            return View(product);
+        }
+    }
+}
+
+4)Add view for Index action "Index.cshtml"
+@model IEnumerable<ModelDemo.Models.Products>
+
+<h1>Index</h1>
+<table class="table table-hover">
+    <thead class="bg-primary text-white">
+        <tr>
+            <th>ProductId</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var items in Model)
+        {
+            <tr>
+                <td>@items.productId</td>
+                <td>@items.Name</td>
+                <td>@items.Price</td>
+                <td><a asp-controller="Products" asp-action="Details" asp-route-id="@items.productId">Details</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+5)Add View for Details action "Details.cshtml"
+
+@model ModelDemo.Models.Products
+<h1>Details</h1>
+<dl>
+    <dt>ProductId</dt>
+    <dd>@Model.productId</dd>
+    <dt>Name</dt>
+    <dd>@Model.Name</dd>
+    <dt>Price</dt>
+    <dd>@Model.Price</dd>
+</dl>
+<br/>
+<a asp-controller="Products" asp-action="Index"></a>
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Can Partial View Bind the Model Object?
+
+Yes
+
+you can create strongly typed partial view
+
+1) create a new Project[mvc5]"MVCPartialView"
+2)Add follwoeing class into model "Project.cs"
+
+ public class Product
+    {
+        public int ProductID { get; set; }
+        public string Name { get; set; }
+        public double Price { get; set; }
+        public string Photo { get; set; }
+    }
+
+
+"ProductsData.cs"
+-------------------
+
+public IEnumerable<Product> ProductsList
+        {
+            get
+            {
+                List<Product> products = new List<Product>()
+                {
+                    new Product{ ProductID=1,Name="SumsungTv",Price=45000.64,Photo="~/Image/tv.jpg"},
+                    new Product{ ProductID=2,Name="NikeCausal",Price=5400.00,Photo="~/Image/shoe.jpg"},
+                     new Product{ ProductID=3,Name="NikeCausal",Price=35000.00,Photo="~/Image/lapy.jpg"},
+                      new Product{ ProductID=4,Name="NikeCausal",Price=15400.00,Photo="~/Image/fridge.jpg"}
+                };
+                return products;
+            }
+
+Goto Views shared folder and add a new Partial View "_ProtoType.cshtml"
+@model MvcPartialViews2.Models.Product
+    <div class="card">
+        <div class="card-header">var
+            <h3>@Model.Name</h3>
+        </div>
+        <div class="card-body">
+            <img src='@Url.Content(Model.Photo)' class="img-thumbnail" width="100" height="100"/>
+        </div>
+        <div class="card-footer">
+            <h3>@Model.Price</h3>
+        </div>
+    </div>
+
+Add a new Controller by name "ProductsController.cs"
+------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using MvcPartialViews2.Models;
+
+namespace MvcPartialViews2.Controllers
+{
+    public class ProductsController : Controller
+    {
+        // GET: Products
+        ProductsData db = new ProductsData();
+        //public ViewResult Index()
+        //{
+
+        //    return View(db.ProductsList.ToString());
+        //}
+
+        public ActionResult Index()
+        { 
+            var mode = db.ProductsList.ToList();
+            return View(mode);
+        }
+    public ActionResult Details(int id)
+	    {
+            return View(db.ProductsList.Single(x=>x.ProductID==id));
+    }
+    public PartialViewResult Top2()
+        {
+            return PartialView("_Grid",db.ProductsList.OrderByDescending(x=>x.Price).Take(2).ToList());
+        }
+     public PartialViewResult Bottom2()
+        {
+            return PartialView("_Grid",db.ProductsList.OrderBy(x=>x.Price).Take(2).ToList());
+        }
+        public PartialViewResult OrderByPrice()
+        {
+            return PartialView("_Grid",db.ProductsList.OrderBy(x=>x.Price).Take(2).ToList());
+        }
+    }
+}
+
+
+Add index.cshtml
+----------------
+
+@model IEnumerable<MvcPartialViews2.Models.Product>
+
+<h2>ProductsIndex</h2>
+<div class="card-deck">
+    @foreach(var items in Model)
+    {
+    <ol>
+        @Html.Partial("_ProtoType", items)
+
+        @Html.ActionLink("Details", "Details", new { id = items.ProductID })
+        @Html.ActionLink("Top2", "Top2", new { id = items.Name })
+        @Html.ActionLink("Bottom2", "Bottom2", new { id = items.Price })
+        @Html.ActionLink("OrderByPrice", "OrderByPrice", new { id = items.Photo })
+    </ol>
+    }
+</div>
+
+Add Details.cshtml
+
+
+@model MvcPartialViews2.Models.Product
+
+<h2>Details</h2>
+@Html.Partial("_ProtoType")
+<br/>
+@Html.ActionLink("BacktoIndex","Index")
+
+Add _Grid.cshtml
+-----------------
+
+
+@model IEnumerable<MvcPartialViews2.Models.Product>
+
+
+    <table class="table table-hover">
+     
+        <thead class="bg-success text-white">
+
+        <th>ProductID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Preview</th>
+
+        </thead>
+        <tbody>
+            @foreach (var items in Model)
+            {
+                <tr>
+                    <td>@items.ProductID</td>
+                    <td>@items.Name</td>
+                    <td>@items.Price</td>
+                    <td><img class="img-thumbnail" src='@Url.Content(items.Photo)' width="100" height="100" /></td>
+                </tr>
+            }
+            @Html.ActionLink("BacktoIndex", "Index")
+        </tbody>
+    </table>
+
+
+--------------------------------------------------MVC Core.-------------------------------------------------
+MVC (5) entityModel
+
+SqlQueries
+----------
+create Database Tiger
+create table Employee(EmployeeId int primary key, Name Varchar(50), DepartmentId int, Address Varchar(100))
+create table Department(DepartmentId int primary key, DepartmentName Varchar(100), EmployeeId int foreign key References Employee(EmployeeId))
+select *from Employee
+select *from Department
+insert into Employee(EmployeeId,Name,DepartmentId,Address)Values(1,'John',1,'hyd'),(2,'ashish',2,'mumbai'),(3,'tillu',3,'karn')
+insert into Department(DepartmentId,DepartmentName,EmployeeId)Values(1,'HR',1),(2,'admin',2),(3,'marketing',2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

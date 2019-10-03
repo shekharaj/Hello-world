@@ -1,0 +1,367 @@
+Store procedure::
+
+create procedure emp_select
+As
+Begin
+Select Eno From Emp
+End
+
+create procedure emp_selectN(@Eno int)
+As
+Begin
+select Ename, salary from emp where Eno=@Eno
+end
+
+-------------------------------------------------------------------
+
+.aspx
+-----
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="WebForm1.aspx.cs" Inherits="WebApplication2.WebForm1" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <table align="center">
+            <tr>
+                <td>
+                    Eno:
+                </td>
+                <td>
+                    <asp:DropDownList ID="ddl1" runat="server"></asp:DropDownList>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <asp:Button ID="Button1" runat="server" Text="Submit" OnClick="Button1_Click" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    EName:
+                </td>
+                <td>
+                    <asp:TextBox ID="txt2" runat="server"></asp:TextBox>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Salary:
+                </td>
+                <td>
+                    <asp:TextBox ID="txt3" runat="server"></asp:TextBox>
+                </td>
+            </tr>
+            
+        </table>
+    </form>
+</body>
+</html>
+-------------------------------------------------
+.cs
+---
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data.OleDb;
+
+namespace WebApplication2
+{
+    public partial class WebForm1 : System.Web.UI.Page
+    {
+        OleDbConnection con;
+        OleDbCommand cmd;
+        OleDbDataReader dr;
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            con = new OleDbConnection("provider=sqlOleDb; server=.; Integrated Security =SSPI; Database=asp9am"); ;
+            cmd = new OleDbCommand("emp_select",con);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            con.Open();
+            dr = cmd.ExecuteReader();
+            if(!IsPostBack)
+            {
+                ddl1.Items.Insert(0,"select");
+                while(dr.Read())
+                {
+                    ddl1.Items.Add(dr.GetValue(0).ToString());
+                }
+            }
+            con.Close();
+
+        }
+
+        protected void Button1_Click(object sender, EventArgs e)
+        {
+            int no = int.Parse(ddl1.SelectedItem.Text);
+            cmd = new OleDbCommand("emp_selectN",con);
+            cmd.Parameters.AddWithValue("@Eno",no);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            con.Open();
+            dr = cmd.ExecuteReader();
+            if(dr.Read())
+            {
+                txt2.Text = dr.GetValue(0).ToString();
+                txt3.Text = dr.GetValue(1).ToString();
+            }
+            con.Close();
+        }
+    }
+}
+------------------------------------------------------------------------------------------------------------
+Insert 
+create procedure Emp_Insert(@Eno int ,@Ename varchar(max), @Salary money)
+as
+Begin
+Insert into Emp Values(@Eno,@Ename,@Salary)
+
+.aspx
+------
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="WebForm2.aspx.cs" Inherits="WebApplication2.WebForm2" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+       <table align ="center">
+           <tr>
+               <td>
+                   Eno:
+               </td>
+               <td>
+                   <asp:TextBox ID="txt1" runat="server"></asp:TextBox>
+               </td>
+           </tr>
+           <tr>
+               <td>
+                   EName:
+               </td>
+               <td>
+                   <asp:TextBox ID="txt2" runat="server"></asp:TextBox>
+               </td>
+           </tr>
+           <tr>
+               <td>
+                   Salary:
+               </td>
+               <td>
+                   <asp:TextBox ID="txt3" runat="server"></asp:TextBox>
+               </td>
+           </tr>
+           <tr>
+               <td>
+                   <asp:Button ID="Button1" runat="server" Text="Submit" OnClick="Button1_Click" />
+               </td>
+           </tr>
+           <tr>
+               <asp:Label ID="lbl1" runat="server" Text="Label"></asp:Label>
+           </tr>
+       </table>
+    </form>
+</body>
+</html>
+
+........................
+.cs
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data.SqlClient;
+using System.Data;
+
+namespace WebApplication2
+{
+    public partial class WebForm2 : System.Web.UI.Page
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            con = new SqlConnection("server=.; Integrated Security=SSPI; Database=asp9am");
+        }
+
+        protected void Button1_Click(object sender, EventArgs e)
+        {
+            int no = int.Parse(txt1.Text);
+            string name = txt2.Text;
+            double sal = double.Parse(txt3.Text);
+            cmd = new SqlCommand("emp_Insert",con);
+            cmd.Parameters.AddWithValue("@eno",no);
+            cmd.Parameters.AddWithValue("@ename",name);
+            cmd.Parameters.AddWithValue("@Salary",sal);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            con.Open();
+            int i = cmd.ExecuteNonQuery();
+            con.Close();
+            txt1.Text = "";
+            txt2.Text = "";
+            txt3.Text = "";
+            if(i>0)
+            {
+                lbl1.Text = "Record inserted";  
+            }
+            else
+            {
+                lbl1.Text = "Record not inserted";
+            }
+        }
+    }
+}
+
+-------------------------------------------------------------------------------------------------------------------
+Updated:
+
+create procedure emp_update(@eno int,@Salary money)
+As
+Begin
+
+   update emp set Salary=@sal where Eno=@eno
+
+End
+
+.Aspx
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="WebForm3.aspx.cs" Inherits="WebApplication2.WebForm3" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <table>
+            <tr>
+                <td>
+                 Eno:
+                </td>
+                <td>
+                    <asp:DropDownList ID="ddl1" runat="server"></asp:DropDownList>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Salary:
+                </td>
+                <td>
+                    <asp:TextBox ID="txt1" runat="server"></asp:TextBox>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <asp:Button ID="Button1" runat="server" Text="UpdateSalary" OnClick="Button1_Click" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <asp:Label ID="lbl1" runat="server" Text="Label"></asp:Label>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>
+
+.cs
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data.SqlClient;
+using System.Data;
+
+namespace WebApplication2
+{
+    public partial class WebForm3 : System.Web.UI.Page
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+        SqlDataReader dr;
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            con = new SqlConnection("server=.;Integrated security=SSPI; Database=asp9am");
+            cmd = new SqlCommand("emp_select",con);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            con.Open();
+            dr = cmd.ExecuteReader();
+            if(!IsPostBack)
+            {
+                ddl1.Items.Insert(0,"Select");
+                while(dr.Read())
+                {
+                    ddl1.Items.Add(dr.GetValue(0).ToString());
+                }
+            }
+            con.Close();
+
+
+        }
+
+        protected void Button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int no = int.Parse(ddl1.SelectedItem.Text);
+                double sal = double.Parse(txt1.Text);
+                cmd = new SqlCommand("emp_update",con);
+                cmd.Parameters.AddWithValue("@Salary",sal);
+                cmd.Parameters.AddWithValue("@Eno", no);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                con.Open();
+                int i = cmd.ExecuteNonQuery();
+                con.Close();
+                txt1.Text = "";
+                if(i>0)
+                {
+                    lbl1.Text = "Salary Updated";
+                }
+
+            }
+            catch(Exception ex)
+            {
+                lbl1.Text = "Salary not updated";
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

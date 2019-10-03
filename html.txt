@@ -1,0 +1,31 @@
+Two important components
+------------------------
+Front end:what end use is seeing on the website
+
+HTML,Js,CSS==>JQuery,Bootstrap etc...
+structure of web page
+---------------------
+HTML-->Hypertext Markup Language
+CSS-->Cascading style sheet
+JavaScript--> dynamic Response(add afunctionality to HTML page)
+static Content
+welcome to Rajashekar==>static Response
+eg:
+
+HTML==only static
+HTML+JS==Dynamic
+what diff b/w webapp and enterprise application?
+
+enterprise: Banking application/more superior
+
+image inside html:
+------------------
+<img src ="abc.jpg" alt=""
+
+
+
+
+
+
+
+

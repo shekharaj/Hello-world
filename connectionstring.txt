@@ -1,0 +1,5 @@
+ <connectionStrings>
+    <add name="Northwindconnection" providerName="System.Data.SqlClient"
+         connectionString="Data Source= DESKTOP-I3A0P0E; Initial Catalog=NorthwindDb; User Id=sa; Password=123 "/>  
+  
+  </connectionStrings>

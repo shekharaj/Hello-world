@@ -1,0 +1,98 @@
+Database:  Interrected data
+---------
+Two types:
+---------
+Day to day operations in DB includes:
+C->create
+R->Read
+U->Update
+D->Delete
+
+DBMS(Database Management System)
+DBMS is a software used to create and Manage Database
+
+RDBMS:
+------
+A DB that support all CODD rules is called perfect RDBMS software
+
+Information Rule:
+-----------------
+According to information rule data must be organised in tables i.e rows and columns
+
+DB:Collection of tables
+Table: Collectio of rows and colums
+Row: Collection of field values
+Column: Collection of valu assigned to one field
+
+Every table must contain a primary key to uniquely identify records
+
+one table is related to another table using foreignkey
+
+RDBMS software
+--------------
+Sql server-->M/S
+Oracle -->Oracle
+MySql-->Open Source
+DB2-->IBM
+
+ORDBMS:
+-------
+
+It is combination of RDBMS and OOPs
+
+ORDBMS=RDBMS+OOPS(Reusability)
+
+-->RDBMS doesn't support reusability
+-->ORDBMS support reusability by using UDT(user defined type)
+
+ORDBMS softwares
+-----
+
+Analysis
+Desigin
+Development
+Testing
+Implementation
+Maintenance
+
+DB is designed by Designers/Architects by using
+1)ER model(Entity Relationship)
+2)Normalization
+
+DB is developed by developers & DBA(Database Adminisrators) by using RDBMS software like SQL Server
+
+Sql server used for development of DB not for desigin
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

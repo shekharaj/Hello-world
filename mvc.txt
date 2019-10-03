@@ -1,0 +1,305 @@
+https://github.com/Sharma-NareshIT/UI-Technolgies
+
+What is MVC?
+--------------
+
+It Is an Software Architectural Pattern
+
+Desing Patterns?
+
+These are solutions for software design problems that you find again and in real world application development
+
+The 23GOF(Gang of four) patterns are consider as foundation for all other patterns they are 
+categorised Into 3Groups
+
+1)Creational-->These patterns deals with object creation Mechanism, 
+trying to create object for various situations.
+
+They are
+
+-->abstract Factory
+-->Buider
+-->Factory Method
+-->prototype
+-->Singleton
+
+2)structual-->The structural pattern deals with designing and defing relationship b/w them they are
+
+adaptor,Bridge,Decaration,Facade
+
+3)Behavioural--> These are common communication pattenrs used in software development they define communication
+b/w object and it's calss
+
+Structural: The structural patterns deals with designing and definning relationship b/w them theyare
+
+adaptor,Bridge,Charactor,Bridge,Decarator,facade,Flyweigh
+
+Behavioural Patterns:: These are common Communication Pattern used in software development they define 
+communication between object & its class
+
+Chain of responsibility, CmdInterpretor, Iterator,Mediator,Observer state,Template method,visitor
+
+Architectural Patterns:
+-----------------------
+
+An architectural Patterns is a general reusable solution for commenly occuring problems in software 
+Architecture they are similor to disigin pattern's but have a broader scope they are
+
+Mvc is an Software Architectural Pattern
+MVC orginally introduced in the early 1970's by TRYVE and Formulated with SmallTalk
+MVC Introduced the feature like code reusability and Code saparation originally MVC was designed for desktop 
+application now adapted for web application
+
+Various techinologies are using MVC Framework
+
+ASP.Net MVC is an alternative for ASP.Net Webforms not replacement.
+Asp.Net webforms are matured and more Interactive
+Webforms use left of server side Interaction
+applications are Heavy and cannot run low bandwidth devices
+They are tightly coupled architecture will make unit testing handler
+
+MVC Architecture::
+------------------
+
+MVC is an S/w architectural pattern used with ASP.NET
+It separeats the entire application three major components
+ 
+Model:Model is aset of classes that represnts the data we are working with as well as the business
+It Contains a set of rules that specify how data can be changed and Manipulated
+In ASp.Net MVC model uses POCO(Plain OlD CLR Object)
+It is just like adata Access layer
+appart from providing data object model have no signature.
+
+View:
+IT describe the Application User Interface
+It is a template that dynamically renders html
+it is under the control of view engine
+Various View engines supported by ASP.Net are
+
+ViewEngine: it is converted serverside scripting language into html buz browser understood only html 
+
+View engine serverside syntax 
+Razar    -->     @{N}
+ASPX     -->     <%=N%>
+
+ASp.net MVC UI Comparise of View[Pages]& Partial View[User Controls] Layouts[MasterPages]
+
+Controller:
+-----------
+It is Core MVC Component
+It Contains the overall apllicatin flow
+It is a class the handler
+a) Communication from the user
+b) Overall Application Flow
+c) Application Specific logic
+
+Acontraller class comprise of methods that respond to client requirment which are known as "Action Methods" 
+
+Difference 
+
+Asp.Net Webforms
+----------------
+1)webforms uses a page contraller patter where every page have it's own controller class.
+2)The request from client will be to apage which loads the controller as code behind.
+3)webforms uses apage cycle and various page events to process the request.
+4)webforms use lot of viewstate
+5)webforms & require lot of state Management techinque for transporting data
+6)webforms will not support Complete HTML
+7)Applications are Having with lot of serverside interaction & connot reach low bandwidth device 
+8)webforms are tight coupled hard to test
+9)webforms not support test drove development until testing requirs lots of implimentation
+10)support Rapid application(RAD)
+
+ASP.NET MVC
+-----------
+1)It uses the front controller pattern where all pages are handled by asingle controller class
+2) The request from client will be to controller method(Delegate Request) It process the request
+ and sends output to page(View)
+3)MVC does't use any page cycle or page events, it just uses the request cycle
+4)No more View State
+5)No More statemanagent techinqe require for transporting data
+6)MVC support complete html
+7)It uses a light weighy architecture that can reach broad range of device i.e browser to mobile
+8)MVC is loosely coupled and easy to test
+9)MVC support last driven development & unit testing
+10)MVC not supported RAD
+
+
+What is .Net Core?
+
+.Net core is an opensource & crossplatform Developers platfrom maintained by microsoft and .Net Community,
+ Which includes orgination like GODADDY and SUMSUNG
+
+.Net core is single software to built any type of application which include
+web,Desktop,Mobile,Gaming,2D,3D,AI,IOT
+
+Features of .Net Core?
+1)modular
+2)unified ux, developent
+3)Cloud Ready
+4)FasterDevelopmet cycle
+5)Roslyn JIT(Dynamically Compile Code)
+
+Modular
+-------
+1).Net core usage a modular approach where F/w Shipts along with application
+2)Modular approach enables asynch_Techique with non-blocking mechanism
+3)Framework shits an application integer part hence suitable for low bandwidth devices
+
+Consistanct
+Dependancy Injection
+2)Cloud Ready
+
+.Net core have acloud integrated environment
+It provides seamless transition on permission to cloud
+Faster Developemt Cycle
+Features are shipped as packages
+Same class runs on development and production
+
+4) Open source and Cross platform
+Runs on any device and OS
+Available on GIT with MIT licence
+
+Action Method: An action method is aspecial type of method in controller class that response to various
+http verbs like,GET,POST,DELETE---etc
+
+->Acontroller Actio method must be public
+->it must return a value
+->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

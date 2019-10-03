@@ -1,0 +1,24 @@
+what is the access modifier of the default constructor?
+Public
+
+2) diff b/w int and int32?
+
+int
+
+->it is primitive data type defined in csharp
+->It is a value type
+->Represent System.int32Struct.
+->it is mapped to int32 of FCL type
+
+int32
+
+->it is value type
+->repersent System.int32Struct
+->in csharp int is mapped to int32
+->it is signed and takes32 bits
+
+.Net Framework?
+
+It is a software development platform developed by microsoft the framework was meant to create applications,
+which would run on windows platform.
+

@@ -1,0 +1,131 @@
+
+ASP.Net Mvc Application
+Database in SQL server
+ADO.NET Entity Framework(To Handled communicatio with Database)
+
+web connection
+--------------
+<connectionStrings>
+    <add name="ProductsConnection" providerName="System.Data.SqlClient"
+         connectionString="Data Source= DESKTOP-I3A0P0E; Initial Catalog=ProductDb; User Id=sa; Password=123 "/>
+
+  </connectionStrings>
+
+Products.cs
+--------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.ComponentModel.DataAnnotations.Schema; // these are used for structuring the table
+using System.ComponentModel.DataAnnotations; // Configuring the attributes for the fields
+
+namespace MvcDataBinding.Models
+{
+    [Table("tblproducts1")]
+    public class Product
+    {
+        public int ProductId { get; set; }
+        public string Name { get; set; }
+        public Nullable<decimal> Price { get; set; }
+    }
+}
+productsContext.cs
+------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data.Entity;
+
+namespace MvcDataBinding.Models
+{
+    public class ProductsContext:DbContext
+    {
+        public ProductsContext()
+            :base("ProductsConnection")
+        {
+
+        }
+        public DbSet<Product> Productstable { get; set; }
+    }
+}
+
+
+ProductsController:
+-------------------
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using MvcDataBinding.Models;
+
+namespace MvcDataBinding.Controllers
+{
+    public class ProductsController : Controller
+    {
+        ProductsContext db = new ProductsContext();
+
+        // GET: Products
+        public ViewResult Index()
+        {
+            return View(db.Productstable.ToList());
+        }
+    }
+}
+
+Index.cshtml
+------------
+
+@model IEnumerable<MvcDataBinding.Models.Product>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Price)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Price)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ProductId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ProductId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ProductId })
+        </td>
+    </tr>
+}
+
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

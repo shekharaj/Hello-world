@@ -1,0 +1,472 @@
+//create new Project "MvcAdoCrud"
+
+create database Productdb
+-------------------------
+create table tblProducts1
+
+ProductId		Name		Price
+4		Lee Cooper Boot	 	5300.63
+5		sumsung			32000.00
+6		Mamathashekhar		33000.00
+7		Shekhar			25000.00
+8		Mamatha			75000.00
+9		john			9878.000
+
+1)Add stored procedure into Demodb for handeling intaraction with tables
+//Read
+------
+select *from tblProducts1
+/*Read*/
+create Procedure getProducts1
+As
+Select ProductId,Name,Price from tblProducts1
+Go
+/*Insert*/
+Create Procedure AddProducts1
+(
+@Name varchar(50),
+@Price Money
+)
+As
+Insert into tblProducts1(Name,Price)Values(@Name,@Price)
+Go
+/*Update*/
+Create Procedure UpdateProducts1
+(
+@ProductId int,@Name varchar(50),@Price Money
+) 
+As
+Update tblProducts1 set Name=@Name,
+Price=@Price where ProductId=@ProductId
+Go
+
+/*Delete*/
+Create procedure DeleteProducts1(@ProductId int)
+As
+Delete From tblProducts1 where ProductId=@ProductId
+Go
+
+
+//Connection string:	//Add the Following Models into class folder
+Product.cs
+----------
+ public class Product
+    {
+        public int ProductId { get; set; }
+        public string Name { get; set; }
+        public decimal? Price { get; set; }
+    }
+
+BusinessLayer.cs :This will contain logic
+----------------
+
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace MvcADoCrud.Models
+{
+    public class BusinessLayer
+    {
+        string strcon = ConfigurationManager.ConnectionStrings["Democonnection"].ToString();
+        SqlConnection con;
+        SqlCommand cmd;
+        //Read
+        public IEnumerable<Product>ProductList
+        {
+            get
+            {
+                List<Product> products = new List<Product>();
+                con = new SqlConnection(strcon);
+                con.Open();
+                cmd = new SqlCommand("getProducts",con);
+                SqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    Product product = new Product();
+                    product.ProductId = Convert.ToInt32(dr["ProductId"]);
+                    product.Name = dr["Name"].ToString();
+                    product.Price = Convert.ToDecimal(dr["Price"]);
+                    products.Add(product);
+                }
+                dr.Close();
+                con.Close();
+                return products;   
+            }
+
+        }
+        //Create
+       public bool AddProducts(Product product)
+        {
+            con = new SqlConnection(strcon);
+            cmd = new SqlCommand("AddProducts", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@Name", product.Name);
+            cmd.Parameters.AddWithValue("@Price", product.Price);
+            con.Open();
+             int i = cmd.ExecuteNonQuery();
+            con.Close();
+
+            if (i >= 1)
+                return true;
+            else
+                return false;
+           
+        }
+        //update
+        public bool UpdateProducts(Product product)
+        {
+            con = new SqlConnection(strcon);
+            SqlCommand cmd = new SqlCommand("UpdateProducts", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@ProductId",product.ProductId);
+            cmd.Parameters.AddWithValue("@Name", product.Name);
+            cmd.Parameters.AddWithValue("@Price", product.Price);         
+            con.Open();
+            int i = cmd.ExecuteNonQuery();
+            con.Close();
+
+            if (i >= 1)
+                return true;
+            else
+                return false;
+        }
+       //Delete
+        public void DeleteProduct(int id)
+        {
+            con = new SqlConnection(strcon);
+            con.Open();
+            cmd = new SqlCommand("DeleteProducts", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@ProductId",id);
+            cmd.ExecuteNonQuery();
+            con.Close();
+            
+        }
+    }
+}
+
+//Add new Controller
+-------------------
+using System.Web.Mvc;
+using MvcADoCrud.Models;
+
+namespace MvcADoCrud.Controllers
+{
+    public class HomeController : Controller
+    {
+        BusinessLayer db = new BusinessLayer();
+        // GET: Home
+        public ActionResult Index()
+        {
+
+            return View(db.ProductList);
+
+        }
+
+        // GET: Home/Details/5
+        public ActionResult Details(int id)
+        {
+            return View(db.ProductList.Single(x=>x.ProductId==id));
+        }
+
+        // GET: Home/Create
+        public ActionResult Create()
+        {
+
+            return View();
+        }
+        //POST:student/create
+
+
+        // POST: Home/Create
+        [HttpPost]
+        public ActionResult Create(Product product)
+        {
+            db.AddProducts(product);
+            try
+            {
+
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: Home/Edit/5
+        public ActionResult Edit(int id)
+        {
+            BusinessLayer db = new BusinessLayer();
+            return View(db.ProductList.Single(x => x.ProductId == id));
+        }
+
+        // POST: Home/Edit/5
+        [HttpPost]
+        public ActionResult Edit(Product product)
+        {
+
+            try
+            {
+                BusinessLayer db = new BusinessLayer();
+                db.UpdateProducts(product);
+                // TODO: Add update logic here
+
+                return RedirectToAction("Index");
+
+            }
+            catch
+            {
+                return View();
+            }
+        }
+        //Delete
+        public ActionResult Delete(int id)
+        {
+            return View(db.ProductList.Single(x=>x.ProductId==id));
+        }
+        [HttpPost,ActionName("Delete")]
+        public ActionResult DeletePost(int id)
+        {
+            db.DeleteProduct(id);
+            return RedirectToAction("Index");
+        }    
+    }
+}
+
+Index.Cshtml
+----------
+@model IEnumerable<MvcADoCrud.Models.Product>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Price)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Price)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ProductId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ProductId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ProductId })
+        </td>
+    </tr>
+}
+
+</table>
+
+Create.cshtml
+-------------
+@model MvcADoCrud.Models.Product
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>Product</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Price, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+Edit.cshtml
+-----------
+@model MvcADoCrud.Models.Product
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>Product</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.ProductId)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Price, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+Delete.cshtml
+-------------
+@model MvcADoCrud.Models.Product
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Product</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" onclick="return confirm('Are you sure you want delete');"/> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>
+
+
+
+-------------------------------------------------------------------------------------------------------------
+
+create database StudentDB
+Create table Dept(DeptId int primary key, DeptName varchar(50))
+Create table Emp(EmpId int primary key, EmpName varchar(50),EmpJob varchar(50),EmpSalary varchar(50),DeptId int foreign key references Dept(DeptId))
+Select *from Dept
+select *from Emp
+
+select *from Student1
+
+/*Read*/
+create Procedure getStudentDetails
+As
+Select ID,SName,DOB,DOJ,FName,WClass,Section,Address,Gender from student1
+Go
+/*Insert*/
+Create Procedure AddStudent
+(
+@Name varchar(50),
+@SName Varchar(50),
+@DOB Date,
+@DOJ Date,
+@FNAME Varchar(50),
+@WClass Varchar(50),
+@Section Varchar(50),
+@Address Varchar(50),
+@Gender char(1)
+)
+As
+Insert into Student1(SName,DOB,DOJ,FName,WClass,Section,Address,Gender)Values(@SName,@DOB,@DOJ,@FNAME,@WClass,@Section,@Address,@Gender)
+Go
+
+/*Update*/
+Create Procedure UpdateStudent1
+(
+@ID int,@SName varchar(50),@DOB date,@DOJ date,@FNAME varchar(50),@WClass varchar(50),@Section varchar(50),@Address varchar(50),@Gender char(1)
+) 
+As
+Update Student1 set
+SName=@SName,DOB=@DOB,DOJ=@DOJ,FNAME=@FNAME,WCLASS=@WClass,Section=@Section,Address=@Address,Gender=@Gender
+ where ID=@ID
+Go
+/*Delete*/
+Create procedure DeleteStudent(@Id int)
+As
+Delete From Student1 where Id=@Id
+Go
+
+
+
+
+
+
+
+
+

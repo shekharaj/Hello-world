@@ -1,0 +1,197 @@
+Create project CRUD using the Repository Pattern in MVC
+-------------------------------------------------------
+
+Book.cs
+-------
+
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+
+ public class Book
+    {
+        [Key]
+        public int id { get; set; }
+        [Required]
+        [MaxLength(30)]
+        public string Title { get; set; }
+        public string Author { get; set; }
+        [Column("Year")]
+        [Display(Name ="Publish Year")]
+        public string publishYear { get; set; }
+        [Column("Price")]
+        [Display(Name ="Price")]
+        public decimal BasePrice { get; set; }
+
+    }
+
+Create Data Contextclass
+Bookcontext.cs
+--------------
+
+using System.Data.Entity;
+
+public class BookContext:DbContext
+    {
+        public DbSet<Book> Books { get; set; }
+    }
+
+The connection string in the web.con
+
+ <connectionStrings>
+    <add name="BookContext" providerName="System.Data.SqlClient"
+         connectionString="Data Source= DESKTOP-I3A0P0E; Initial Catalog=ProductDb; User Id=sa; Password=123 "/>
+  </connectionStrings>
+
+Create Repository
+-----------------
+Create one folder folder Name is DAL
+-------------------------------------
+In the DAL folder create an IBookRepository interface that has the file name IBookRepository.cs
+This Interface code Declare the tipical set of CURD methods including to read methods one that returns 
+all Book Entity sets, and one that finds  asingle book entity by id
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using BookApplication.Models;
+
+namespace BookApplication.DAL
+{
+    public interface IBookRepository : IDisposable
+    {
+        IEnumerable<Book> GetBooks();
+        Book GetBookByID(int bookId);
+        void InsertBook(Book book);
+        void DeleteBook(int bookID);
+        void UpdateBook(Book book);
+        void Save();
+    }
+
+}
+
+In the DAL folder create a class file name BookRepository.cs the class file implements the "IBookRepository"
+Interface and the "IBookRepository" inherits the IDisposable interface so the IDisposible interface is 
+indirectly implemented by the IBookRepository class
+
+
+Here we are passing BookContext instance to the constructor
+-----------------------------------------------------------
+
+using BookApplication.Models;
+using System.Data;
+using System.Data.Entity;
+
+namespace BookApplication.DAL
+{
+    public class BookRepository : IBookRepository
+    {
+        private BookContext context;
+        private BookContext _context;
+
+        public BookRepository(BookContext bookContext)
+        {
+            this._context = bookContext;
+        }
+        public IEnumerable<Book> GetBooks()
+        {
+            return _context.Books.ToList();
+        }
+        public Book GetBookByID(int id)
+        {
+            return _context.Books.Find(id);
+        }
+        public void InsertBook(Book book)
+        {
+            _context.Books.Add(book);
+        }
+        public void DeleteBook(int bookId)
+        {
+            Book book = _context.Books.Find(bookId);
+            _context.Books.Remove(book);
+        }
+        public void UpdateBook(Book book)
+        {
+            _context.Entry(book).State = EntityState.Modified;
+        }
+        public void Save()
+        {
+            _context.SaveChanges();
+        }
+        private bool disposed = false;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    _context.Dispose();
+                }
+            }
+            this.disposed = true;
+        }
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+
+    }
+}
+
+-------------------------------------------------------------------------------------------------------------
+using BookApplication.Models;
+using BookApplication.DAL;
+
+namespace BookApplication.Controllers
+{
+    public class BookControllerController : Controller
+    {
+        private BookRepository _bookRepository;
+
+        public BookControllerController()
+        {
+            this._bookRepository = new BookRepository(new BookContext());
+        }
+        // GET: BookController
+        public ActionResult Index()
+        {
+            var books = from book in _bookRepository.GetBooks()
+                        select book;
+            return View(books);
+        }
+        public ActionResult Details(int id)
+        {
+            Book student = _bookRepository.GetBookByID(id);
+            return View(student);
+        }
+        public ActionResult KeyEvents()
+        {
+            return View();
+        }
+
+    }
+}
+
+---------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

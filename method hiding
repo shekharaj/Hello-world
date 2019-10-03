@@ -1,0 +1,48 @@
+Method Hiding
+-------------
+public class Employee
+ {
+ public string Fname;
+ Publice string Lname;
+ string Email;
+	
+ 	public void PrintFullName()
+  	{
+	Console.writeLine(FirstName+ ""+LastName);
+	}
+
+ }
+
+public class FullTimeEmployee:Empolyee
+{
+
+	//base.PrintFullName(); //Here base refer the parent class method..
+    public new void PrintFullName()  //this method is hiding the parent class method
+  	{
+	Console.writeLine(FirstName+ ""+LastName+ "-Contractor");
+	}
+	
+}
+
+public class PartTimeEmployee:Empolyee
+{
+
+}
+
+//Multilevel Inheritance
+public class A : PartTimeEmployee
+
+public class Program
+{
+ public static void Main()
+ {
+  FullTimeEmployee FTE = new FullTimeEmployee();
+  FTE.Fname="FullTime";
+  FTE.Lname="Tech";
+  FTE.PrintFullName();
+  
+  PartTimeEmployee PTE = newPartTimeEmployee();
+  PTE.Fname="PartTime";
+  PTE.Lname="Tech";
+  PTE.PrintFullName();
+ }

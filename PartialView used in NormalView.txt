@@ -1,0 +1,212 @@
+PartalViewResult
+----------------
+
+  Represents a base class that is used to render a partial view to the response
+
+PartialView is similar to a web user control
+
+_Partial view : is reusable prototype this view we can use any another view
+-.cshtml
+-The method that are used to access any Partial view are
+ 
+    1)Html.Partial()
+    2)Html.RenderPartial()
+
+
+Html.Partial
+------------
+Method that returns Htmlstring
+Rendered Partial view result can be stored in HtmlString
+Can catch the Result
+Round Trip
+slow in access
+
+Html.RenderPartial
+--------------------
+Method without any return value
+Directly render a string to response
+Can't be cached
+No round trip
+Fast
+
+
+
+Partial view
+------------
+
+Controller.cs
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace PartialDemo.Controllers
+{
+    public class HomeController : Controller
+    {
+        // GET: Home
+        public ActionResult Index()
+        {
+            return View();
+        }
+        public PartialViewResult Login()
+        {
+           return PartialView();
+        }
+    }
+}
+
+Index.cshtml(Normal View)
+------------
+
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+@Html.Partial("Login")
+
+<br />
+
+@{ 
+    Html.RenderPartial("Login");
+}
+
+
+Login.cshtml(PartialView)
+---------------
+
+<form>
+    <div>
+        <h2>Login</h2>
+        <dl>
+            <dt>User Name</dt>
+            <dd><input type="text"/></dd>
+            <dt>Password</dt>
+            <dd><input type="password"></dd>
+        </dl>
+        <button>Login</button>
+    </div>
+</form>
+
+
+strongly typed partialView
+--------------------------
+Product.cs
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace PartialDemo.Models
+{
+    public class Product
+    {
+        public int ProductId { get; set; }
+        public string Name { get; set;}
+        public double Price { get; set; }
+        public string Photo { get; set; }
+    }
+}
+
+ProductsController
+------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using PartialDemo.Models;
+
+namespace PartialDemo.Controllers
+{
+    public class ProductsController : Controller
+    {
+        List<Product> products = new List<Product>()
+        {
+            new Product{ProductId=1, Name="Lapy",Price=35000,Photo="~/Images/lapy.jpg" },
+            new Product{ProductId=2, Name="fridge",Price=22000,Photo="~/Images/fridge.jpg" },
+            new Product{ProductId=1, Name="Lee",Price=3000, Photo="~/Images/Lee.jpg" },
+            new Product{ProductId=1, Name="mobile",Price=2700,Photo="~/Images/mobile.jpg" }
+
+        };
+        // GET: Products            
+        public PartialViewResult ProtoType()
+        {
+            return PartialView();
+        }
+        public ActionResult Index()
+        {
+            return View(products);
+        }
+
+    }
+}
+
+PartialiView(Prototype.cshtml)
+------------------------------
+
+@model PartialDemo.Models.Product
+
+<table width="400" border="2" align="center">
+    <tr>
+        <td>
+            <img src='@Url.Content(Model.Photo)' width="200" height="200"/>
+        </td>
+        <td>
+            <table frame ="box" rules ="all" align="center">
+                <tr>
+                    <td>Product Id</td>
+                    <td>@Model.ProductId</td>
+                </tr>
+                <tr>
+                    <td>Name</td>
+                    <td>@Model.Name</td>
+                </tr>
+                <tr>
+                    <td>Price</td>
+                    <td>@Model.Price</td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+
+</table>
+
+Index.cshtml
+------------
+
+@model List<PartialDemo.Models.Product>
+<h2 align ="center">Product Category </h2>
+
+@foreach(var item in Model)
+{
+    @Html.Partial("ProtoType",item)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
