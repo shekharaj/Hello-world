@@ -1,0 +1,289 @@
+Registration and login
+----------------------
+_Layout.cshtml
+--------------
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/umd/popper.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <div id="templatemo_header_wrapper">
+        </div>
+        <nav class="navbar navbar-expand-sm bg-info navbar-dark">
+            <a class="navbar-brand" href="#">Company</a>
+            <div class="navbar-nav">
+                <ul class="navbar-nav">
+                    <li>
+                        <a class="nav-link" href="/Home/index">Home</a>
+                        <a class="nav-link" href="/Login/index">Login</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-3 text-white">
+                @ViewBag.Message
+            </div>
+        </nav>
+        <div class="container-fluid">
+            @RenderBody()
+        </div>
+</body>
+</html>
+
+Homecontroller.cs
+-----------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using RegAndLogin.Models;
+
+namespace RegAndLogin.Controllers
+{
+    public class HomeController : Controller
+    {
+        // GET: Home
+        public ActionResult Index()
+        {
+            if (Session["UserId"] != null)
+ {
+                MVCDemoDBEntities db = new MVCDemoDBEntities();
+                List<Reg> reg = new List<Reg>();
+                reg = db.Regs.ToList();
+                ViewBag.reg = reg;
+
+
+                return View();
+            }
+            return RedirectToAction("Index", "Login");
+        }
+       
+        [HttpPost]
+        public ActionResult Index(Reg reg)
+        {
+            if(ModelState.IsValid)
+            {
+                using(MVCDemoDBEntities db = new MVCDemoDBEntities())
+                {
+                    db.Regs.Add(reg);
+                    db.SaveChanges();
+                    ModelState.Clear();
+                    reg=null;
+                    ViewBag.Message = "Successfully Registered";
+                }
+            }
+            return View(reg);
+        }
+    }
+}
+
+Home(Index.cshtml)
+------------------
+@model RegAndLogin.Models.Reg
+@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<b>Hello!  @Session["UserName"] </b>
+
+
+<html>
+
+<body>
+    @using (Html.BeginForm("Index", "Home", FormMethod.Post))
+    {
+
+        <fieldset>
+            <legend>Registration</legend>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.FullName)
+            </div>
+            <div class="editor-field">
+                @Html.EditorFor(model => model.FullName)
+            </div>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.EmailId)
+            </div>
+            <div class="editor-field">
+                @Html.EditorFor(model => model.EmailId)
+            </div>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.UserName)
+            </div>
+            <div class="editor-field">
+                @Html.EditorFor(model => model.UserName)
+            </div>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Password)
+            </div>
+            <div class="editor-field">
+                @Html.EditorFor(model => model.Password)
+            </div>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.ConfirmPassword)
+            </div>
+            <div class="editor-field">
+                @Html.EditorFor(model => model.ConfirmPassword)
+            </div>
+            <br />
+            <br />
+            <p>
+                <input type="submit" value="Create" />
+            </p>
+        </fieldset>
+
+    }
+</body>
+</html>
+<table class="table">
+
+    <tr>
+        <th>UserId</th>
+        <th>UserName</th>
+        <th>Password</th>
+        <th>FullName</th>
+        <th>EmailId</th>
+    </tr>
+    @if (ViewBag.reg != null)
+    {
+
+
+    foreach (var item in ViewBag.reg)
+    {
+<tr>
+    <td>
+        @item.UserID
+    </td>
+    <td>
+        @item.UserName
+    </td>
+    <td>
+        @item.Password
+    </td>
+    <td>
+        @item.FullName
+    </td>
+    <td>
+        @item.EmailId
+    </td>
+</tr>
+
+    }
+    }
+
+</table>
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+Login.cs
+--------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using RegAndLogin.Models;
+
+namespace RegAndLogin.Controllers
+{
+    public class LoginController : Controller
+    {
+        // GET: Login
+        public ActionResult Index()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult Index(Reg reg)
+        {
+            if(ModelState.IsValid)
+            {
+                using(MVCDemoDBEntities db=new MVCDemoDBEntities())
+                {
+                    var obj = db.Regs.Where(a => a.EmailId.Equals(reg.EmailId) && a.Password.Equals(reg.Password)).FirstOrDefault();
+                    if (obj != null)
+ 
+                    {
+                        Session["UserId"] = obj.UserID.ToString();
+                        Session["UserName"] = obj.UserName.ToString();
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+                return View(reg);
+            }
+            return View();
+        }
+    }
+}
+
+Login.cshtml
+------------
+@model RegAndLogin.Models.Reg
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<html>
+<head>
+    <meta name="viewport" content="width-device-width"/>
+    <title>Login</title>
+    <style>
+        #login-div{
+            position:absolute;
+            left:40%;
+            top:40%;
+            border:5px solid#0094ff;
+            padding:10px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="login-div">
+        @using (Html.BeginForm("Index", "Login", FormMethod.Post))
+           {
+        <table class="table">
+            <tr>
+                <td></td>
+                <td style="text-decoration:underline">Login</td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.EmailId)
+                </td>
+
+                <td>
+                    @Html.EditorFor(model => model.EmailId)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.Password)
+                </td>
+                <td>
+                    @Html.EditorFor(model => model.Password)
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <input type="submit" name="name" value="Submit" />
+                    <input type="reset" name="name" value="reset" />
+                </td>
+            </tr>
+        </table>
+        }
+    </div>
+</body>
+</html>
+
+
+
+
+
