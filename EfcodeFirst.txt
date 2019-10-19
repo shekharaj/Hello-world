@@ -1,0 +1,129 @@
+CodeFirstExample
+----------------
+ <connectionStrings>
+    <add name="Northwindconnection" providerName="System.Data.SqlClient"
+         connectionString="Data Source= DESKTOP-I3A0P0E; Initial Catalog=NorthwindDb; User Id=sa; Password=123 "/>  
+  
+  </connectionStrings>
+
+Categories.cs
+----------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace CodeFirst.Models
+{
+    [Table("tblCategories")]
+    public class Category
+    {
+        [Key]
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+
+        public ICollection<Product> Products { get; set; }
+    }
+}
+Products.cs
+------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace CodeFirst.Models
+{
+    public class Product
+    {
+        [Key]
+        public int ProdutId { get; set; }
+        public String Name { get; set; }
+        public decimal? Price { get; set; }
+        public Category Category { get; set; }
+    }
+}
+NorthwindDbContext.cs
+---------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data.Entity;
+
+namespace CodeFirst.Models
+{
+    public class NorthwindContext:DbContext
+    {
+        public NorthwindContext()
+        : base("Northwindconnection")
+        {
+
+        }
+        public DbSet<Category> CategoriesTable { get; set; }
+        public DbSet<Product> ProductTable { get; set; }
+    }
+}
+
+
+HomeController.cs
+-----------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using CodeFirst.Models;
+
+namespace CodeFirst.Controllers
+{
+    public class HomeController : Controller
+    {
+        NorthwindContext db = new NorthwindContext();
+        // GET: Home
+        public ActionResult Index()
+        {
+            db.CategoriesTable.ToList();
+            db.ProductTable.ToList();
+            return View();
+        }
+    }
+}
+Index.cs
+--------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using CodeFirst.Models;
+
+namespace CodeFirst.Controllers
+{
+    public class HomeController : Controller
+    {
+        NorthwindContext db = new NorthwindContext();
+        // GET: Home
+        public ActionResult Index()
+        {
+            db.CategoriesTable.ToList();
+            db.ProductTable.ToList();
+            return View();
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
