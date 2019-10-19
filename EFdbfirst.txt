@@ -1,0 +1,804 @@
+BrandsController.cs
+-------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using EFDbFirstApproachExample.Models;
+
+namespace EFDbFirstApproachExample.Controllers
+{
+    public class BrandsController : Controller
+    {
+        // GET: Brands/Index
+        public ActionResult Index()
+        {
+            EFDBFirstDatabaseEntities db = new EFDBFirstDatabaseEntities();
+            List<Brand> brands = db.Brands.ToList();
+            return View(brands);
+        }
+    }
+}
+
+
+Categories.cs
+-------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using EFDbFirstApproachExample.Models;
+
+namespace EFDbFirstApproachExample.Controllers
+{
+    public class CategoriesController : Controller
+    {
+        // GET: Categories/Index
+        public ActionResult Index()
+        {
+            EFDBFirstDatabaseEntities db = new EFDBFirstDatabaseEntities();
+            List<Category> categories = db.Categories.ToList();
+            return View(categories);
+        }
+    }
+}
+
+
+HomeController.cs
+------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace EFDbFirstApproachExample.Controllers
+{
+    public class HomeController : Controller
+    {
+        public ActionResult Index()
+        {
+            return View();
+        }
+    }
+}
+
+Products.cs
+-----------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using EFDbFirstApproachExample.Models;
+
+namespace EFDbFirstApproachExample.Controllers
+{
+    public class ProductsController : Controller
+    {
+        // GET: Products/Index
+        public ActionResult Index(string search = "", string SortColumn = "ProductName", string IconClass="fa-sort-asc", int PageNo = 1)
+        {
+            EFDBFirstDatabaseEntities db = new EFDBFirstDatabaseEntities();
+            ViewBag.search = search;
+            List<Product> products = db.Products.Where(temp => temp.ProductName.Contains(search)).ToList();
+
+            /*Sorting*/
+            ViewBag.SortColumn = SortColumn;
+            ViewBag.IconClass = IconClass;
+            if (ViewBag.SortColumn == "ProductID")
+            {
+                if (ViewBag.IconClass == "fa-sort-asc")
+                    products = products.OrderBy(temp => temp.ProductID).ToList();
+                else
+                    products = products.OrderByDescending(temp => temp.ProductID).ToList();
+            }
+            else if(ViewBag.SortColumn == "ProductName")
+            {
+                if (ViewBag.IconClass == "fa-sort-asc")
+                    products = products.OrderBy(temp => temp.ProductName).ToList();
+                else
+                    products = products.OrderByDescending(temp => temp.ProductName).ToList();
+            }
+            else if (ViewBag.SortColumn == "Price")
+            {
+                if (ViewBag.IconClass == "fa-sort-asc")
+                    products = products.OrderBy(temp => temp.Price).ToList();
+                else
+                    products = products.OrderByDescending(temp => temp.Price).ToList();
+            }
+            else if (ViewBag.SortColumn == "DateOfPurchase")
+            {
+                if (ViewBag.IconClass == "fa-sort-asc")
+                    products = products.OrderBy(temp => temp.DateOfPurchase).ToList();
+                else
+                    products = products.OrderByDescending(temp => temp.DateOfPurchase).ToList();
+            }
+            else if (ViewBag.SortColumn == "AvailabilityStatus")
+            {
+                if (ViewBag.IconClass == "fa-sort-asc")
+                    products = products.OrderBy(temp => temp.AvailabilityStatus).ToList();
+                else
+                    products = products.OrderByDescending(temp => temp.AvailabilityStatus).ToList();
+            }
+            else if (ViewBag.SortColumn == "CategoryID")
+            {
+                if (ViewBag.IconClass == "fa-sort-asc")
+                    products = products.OrderBy(temp => temp.Category.CategoryName).ToList();
+                else
+                    products = products.OrderByDescending(temp => temp.Category.CategoryName).ToList();
+            }
+            else if (ViewBag.SortColumn == "BrandID")
+            {
+                if (ViewBag.IconClass == "fa-sort-asc")
+                    products = products.OrderBy(temp => temp.Brand.BrandName).ToList();
+                else
+                    products = products.OrderByDescending(temp => temp.Brand.BrandName).ToList();
+            }
+
+            /* Paging */
+            int NoOfRecordsPerPage = 5;
+            int NoOfPages = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(products.Count) / Convert.ToDouble(NoOfRecordsPerPage)));
+            int NoOfRecordsToSkip = (PageNo - 1) * NoOfRecordsPerPage;
+            ViewBag.PageNo = PageNo;
+            ViewBag.NoOfPages = NoOfPages;
+            products = products.Skip(NoOfRecordsToSkip).Take(NoOfRecordsPerPage).ToList();
+
+            return View(products);
+        }
+
+        public ActionResult Details(long id)
+        {
+            EFDBFirstDatabaseEntities db = new EFDBFirstDatabaseEntities();
+            Product p = db.Products.Where(temp => temp.ProductID == id).FirstOrDefault();
+            return View(p);
+        }
+
+        public ActionResult Create()
+        {
+            EFDBFirstDatabaseEntities db = new EFDBFirstDatabaseEntities();
+            ViewBag.Categories = db.Categories.ToList();
+            ViewBag.Brands = db.Brands.ToList();
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Create(Product p)
+        {
+            EFDBFirstDatabaseEntities db = new EFDBFirstDatabaseEntities();
+            if (Request.Files.Count >=1)
+            {
+                var file = Request.Files[0];
+                var imgBytes = new Byte[file.ContentLength ];
+                file.InputStream.Read(imgBytes, 0, file.ContentLength);
+                var base64String = Convert.ToBase64String(imgBytes, 0, imgBytes.Length);
+                p.Photo = base64String;
+            }
+            db.Products.Add(p);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult Edit(long id)
+        {
+            EFDBFirstDatabaseEntities db = new EFDBFirstDatabaseEntities();
+            Product existingProduct = db.Products.Where(temp => temp.ProductID == id).FirstOrDefault();
+            ViewBag.Categories = db.Categories.ToList();
+            ViewBag.Brands = db.Brands.ToList();
+            return View(existingProduct);
+        }
+
+        [HttpPost]
+        public ActionResult Edit(Product p)
+        {
+            EFDBFirstDatabaseEntities db = new EFDBFirstDatabaseEntities();
+            Product existingProduct = db.Products.Where(temp => temp.ProductID == p.ProductID).FirstOrDefault();
+            existingProduct.ProductName = p.ProductName;
+            existingProduct.Price = p.Price;
+            existingProduct.DateOfPurchase = p.DateOfPurchase;
+            existingProduct.CategoryID = p.CategoryID;
+            existingProduct.BrandID = p.BrandID;
+            existingProduct.AvailabilityStatus = p.AvailabilityStatus;
+            existingProduct.Active = p.Active;
+            db.SaveChanges();
+            return RedirectToAction("Index", "Products");
+        }
+
+        public ActionResult Delete(long id)
+        {
+            EFDBFirstDatabaseEntities db = new EFDBFirstDatabaseEntities();
+            Product existingProduct = db.Products.Where(temp => temp.ProductID == id).FirstOrDefault();
+            return View(existingProduct);
+        }
+
+        [HttpPost]
+        public ActionResult Delete(long id, Product p)
+        {
+            EFDBFirstDatabaseEntities db = new EFDBFirstDatabaseEntities();
+            Product existingProduct = db.Products.Where(temp => temp.ProductID == id).FirstOrDefault();
+            db.Products.Remove(existingProduct);
+            db.SaveChanges();
+            return RedirectToAction("Index", "Products");
+        }
+    }
+}
+
+
+BrandView.cshtml
+----------------
+@model List<EFDbFirstApproachExample.Models.Brand>
+
+@{
+    ViewBag.Title = "Brands";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+<h2>Brands</h2>
+<table class="table">
+    <tr>
+        <th>Brand ID</th>
+        <th>Brand Name</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.BrandID</td>
+            <td>@item.BrandName</td>
+        </tr>
+    }
+</table>
+
+
+Categories.cshtml
+-----------------
+@model List<EFDbFirstApproachExample.Models.Category>
+
+@{
+    ViewBag.Title = "Categories";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+<h2>Categories</h2>
+<table class="table">
+    <tr>
+        <th>Category ID</th>
+        <th>Category Name</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.CategoryID</td>
+            <td>@item.CategoryName</td>
+        </tr>
+    }
+</table>
+
+
+
+Home.cshtml
+-----------
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+<h2>Home</h2>
+
+Products
+---------
+Create.cshtml
+
+@{
+    ViewBag.Title = "Create Product";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+<h2>Create Product</h2>
+<form action="/products/create" method="post" enctype="multipart/form-data">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="ProductName">Product Name</label>
+            <input type="text" class="form-control" id="ProductName" name="ProductName" placeholder="Product Name">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="Price">Price</label>
+            <input type="number" class="form-control" id="Price" name="Price" placeholder="Price">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="DateOfPurchase">Date of Purchase</label>
+            <input type="date" class="form-control" id="DateOfPurchase" name="DateOfPurchase" placeholder="Date of Purchase">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="AvailabilityStatus">Availability Status</label>
+            <select class="form-control" id="AvailabilityStatus" name="AvailabilityStatus">
+                <option value="">Please Select</option>
+                <option value="InStock">In Stock</option>
+                <option value="OutOfStock">Out of Stock</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="CategoryID">Category</label>
+            <select class="form-control" id="CategoryID" name="CategoryID">
+                <option value="">Please Select</option>
+                @foreach (var cat in ViewBag.Categories)
+                {
+                    <option value="@cat.CategoryID">@cat.CategoryName</option>
+                }
+            </select>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="BrandID">Brand</label>
+            <select class="form-control" id="BrandID" name="BrandID">
+                <option value="">Please Select</option>
+                @foreach (var cat in ViewBag.Brands)
+                {
+                    <option value="@cat.BrandID">@cat.BrandName</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="Image">Image</label>
+        <input type="file" class="form-control-file" id="Image" name="Photo" />
+    </div>
+    <div class="form-group">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="Active" name="Active" value="true">
+            <label class="form-check-label" for="Active">
+                Active
+            </label>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">Create</button>
+    <a class="btn btn-danger" href="/products/index">Cancel</a>
+</form>
+
+Delete.cshtml
+-------------
+@model EFDbFirstApproachExample.Models.Product
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+<h2>Delete Product</h2>
+<form action="/products/delete/@Model.ProductID" method="post">
+    <table class="table">
+        <tr>
+            <td>
+                <label for="ProductName">Product Name</label>
+            </td>
+            <td>
+                <input type="hidden" name="ProductID" value="@Model.ProductID" />
+                @Model.ProductName
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="Price">Price</label>
+            </td>
+            <td>
+                @Model.Price
+            </td>
+        </tr>
+    </table>
+
+    <div>Are you sure to delete this product?</div>
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a class="btn btn-danger" href="/products/index">Cancel</a>
+</form>
+
+Details.cshtml
+--------------
+@model EFDbFirstApproachExample.Models.Product
+
+@{
+    ViewBag.Title = "Product Details";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+<h2>Product Details</h2>
+<table class="table">
+    <tr>
+        <th>Product ID</th>
+        <td>@Model.ProductID</td>
+    </tr>
+    <tr>
+        <th>Product Name</th>
+        <td>@Model.ProductName</td>
+    </tr>
+    <tr>
+        <th>Price</th>
+        <td>@Model.Price.Value.ToString("C")</td>
+    </tr>
+    <tr>
+        <th>Date of Purchase</th>
+        <td>@Model.DateOfPurchase.Value.ToString("d/M/yyyy")</td>
+    </tr>
+    <tr>
+        <th>Brand</th>
+        <td>@Model.Brand.BrandName</td>
+    </tr>
+    <tr>
+        <th>Category</th>
+        <td>@Model.Category.CategoryName</td>
+    </tr>
+    <tr>
+        <th>Active</th>
+        <td>@Model.Active</td>
+    </tr>
+</table>
+
+<a href="/products/index">Back to Products</a>
+
+
+Edit.cshtml
+-----------
+@model EFDbFirstApproachExample.Models.Product
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+<h2>Edit Product</h2>
+<form action="/products/edit/@Model.ProductID" method="post">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="ProductName">Product Name</label>
+            <input type="hidden" name="ProductID" value="@Model.ProductID" />
+            <input type="text" class="form-control" id="ProductName" name="ProductName" placeholder="Product Name" value="@Model.ProductName">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="Price">Price</label>
+            <input type="number" class="form-control" id="Price" name="Price" placeholder="Price" value="@Model.Price">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="DateOfPurchase">Date of Purchase</label>
+            <input type="date" class="form-control" id="DateOfPurchase" name="DateOfPurchase" placeholder="Date of Purchase" value="@Model.DateOfPurchase.Value.ToString("yyyy-MM-dd")">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="AvailabilityStatus">Availability Status</label>
+            <input type="text" class="form-control" id="AvailabilityStatus" name="AvailabilityStatus" placeholder="Availability Status" value="@Model.AvailabilityStatus">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="CategoryID">Category</label>
+            <select class="form-control" id="CategoryID" name="CategoryID">
+                <option value="">Please Select</option>
+                @foreach (var cat in ViewBag.Categories)
+                {
+                    if (cat.CategoryID == Model.CategoryID)
+                    {
+                        <option value="@cat.CategoryID" selected="selected">@cat.CategoryName</option>
+                    }
+                    else
+                    {
+                        <option value="@cat.CategoryID">@cat.CategoryName</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="BrandID">Brand</label>
+            <select class="form-control" id="BrandID" name="BrandID">
+                <option value="">Please Select</option>
+                @foreach (var br in ViewBag.Brands)
+                {
+                    if (br.BrandID == Model.BrandID)
+                    {
+                        <option value="@br.BrandID" selected="selected">@br.BrandName</option>
+                    }
+                    else
+                    {
+                        <option value="@br.BrandID">@br.BrandName</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="Active" name="Active" checked="@Model.Active" value="true">
+            <label class="form-check-label" for="Active">
+                Active
+            </label>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a class="btn btn-danger" href="/products/index">Cancel</a>
+</form>
+
+Index.cshtml
+------------
+@model List<EFDbFirstApproachExample.Models.Product>
+
+@{
+    ViewBag.Title = "Products";
+    Layout = "~/Views/Shared/_LayoutPage1.cshtml";
+}
+
+<h2>Products</h2>
+
+<a href="/products/create">Create</a>
+<form class="form-inline" action="/products/index">
+    <label for="search" class="mr-1">Search:</label>
+    <input type="search" class="form-control mr-1" id="search" name="search" placeholder="Search" value="@ViewBag.search">
+    <button type="submit" class="btn btn-primary">GO</button>
+</form>
+
+<table class="table">
+    <tr class="table-secondary">
+        <th style="width:5%">
+            Photo
+        </th>
+        <th style="width:10%">
+            @if (ViewBag.IconClass == "fa-sort-desc")
+            {
+                <a href="/products/index?SortColumn=ProductID&IconClass=fa-sort-asc&PageNo=1">Product ID</a>
+                if (ViewBag.SortColumn == "ProductID")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+            else
+            {
+                <a href="/products/index?SortColumn=ProductID&IconClass=fa-sort-desc&PageNo=1">Product ID</a>
+                if (ViewBag.SortColumn == "ProductID")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+        </th>
+        <th style="width:20%">
+            @if (ViewBag.IconClass == "fa-sort-desc")
+            {
+                <a href="/products/index?SortColumn=ProducName&IconClass=fa-sort-asc&PageNo=1">Product Name</a>
+                if (ViewBag.SortColumn == "ProductName")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+            else
+            {
+                <a href="/products/index?SortColumn=ProductName&IconClass=fa-sort-desc&PageNo=1">Product Name</a>
+                if (ViewBag.SortColumn == "ProductName")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+        </th>
+        <th style="width:10%">
+            @if (ViewBag.IconClass == "fa-sort-desc")
+            {
+                <a href="/products/index?SortColumn=Price&IconClass=fa-sort-asc&PageNo=1">Price</a>
+                if (ViewBag.SortColumn == "Price")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+            else
+            {
+                <a href="/products/index?SortColumn=Price&IconClass=fa-sort-desc&PageNo=1">Price</a>
+                if (ViewBag.SortColumn == "Price")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+        </th>
+        <th style="width:10%">
+            @if (ViewBag.IconClass == "fa-sort-desc")
+            {
+                <a href="/products/index?SortColumn=DateOfPurchase&IconClass=fa-sort-asc&PageNo=1">Date of Purchase</a>
+                if (ViewBag.SortColumn == "DateOfPurchase")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+            else
+            {
+                <a href="/products/index?SortColumn=DateOfPurchase&IconClass=fa-sort-desc&PageNo=1">Date of Purchase</a>
+                if (ViewBag.SortColumn == "DateOfPurchase")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+        </th>
+        <th style="width:10%">
+            @if (ViewBag.IconClass == "fa-sort-desc")
+            {
+                <a href="/products/index?SortColumn=AvailabilityStatus&IconClass=fa-sort-asc&PageNo=1">Availability Status</a>
+                if (ViewBag.SortColumn == "AvailabilityStatus")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+            else
+            {
+                <a href="/products/index?SortColumn=AvailabilityStatus&IconClass=fa-sort-desc&PageNo=1">Availability Status</a>
+                if (ViewBag.SortColumn == "AvailabilityStatus")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+        </th>
+        <th style="width:10%">
+            @if (ViewBag.IconClass == "fa-sort-desc")
+            {
+                <a href="/products/index?SortColumn=CategoryID&IconClass=fa-sort-asc&PageNo=1">Category</a>
+                if (ViewBag.SortColumn == "CategoryID")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+            else
+            {
+                <a href="/products/index?SortColumn=CategoryID&IconClass=fa-sort-desc&PageNo=1">Category</a>
+                if (ViewBag.SortColumn == "CategoryID")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+        </th>
+        <th style="width:10%">
+            @if (ViewBag.IconClass == "fa-sort-desc")
+            {
+                <a href="/products/index?SortColumn=BrandID&IconClass=fa-sort-asc&PageNo=1">Brand</a>
+                if (ViewBag.SortColumn == "BrandID")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+            else
+            {
+                <a href="/products/index?SortColumn=BrandID&IconClass=fa-sort-desc&PageNo=1">Brand</a>
+                if (ViewBag.SortColumn == "BrandID")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+        </th>
+        <th style="width:5%">
+            @if (ViewBag.IconClass == "fa-sort-desc")
+            {
+                <a href="/products/index?SortColumn=Active&IconClass=fa-sort-asc&PageNo=1">Active</a>
+                if (ViewBag.SortColumn == "Active")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+            else
+            {
+                <a href="/products/index?SortColumn=Active&IconClass=fa-sort-desc&PageNo=1">Active</a>
+                if (ViewBag.SortColumn == "Active")
+                {
+                    <i class="fa @ViewBag.IconClass"></i>
+                }
+            }
+        </th>
+        <th style="width:10%"></th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td><img src="data:image;base64,@item.Photo" width="100px" /></td>
+            <td>@item.ProductID</td>
+            <td>@item.ProductName</td>
+            <td>@item.Price.Value.ToString("C")</td>
+            <td>@item.DateOfPurchase.Value.ToString("d/M/yyyy")</td>
+            <td>@item.AvailabilityStatus</td>
+            <td>@item.Category.CategoryName</td>
+            <td>@item.Brand.BrandName</td>
+            <td>@item.Active</td>
+            <td>
+                <a href="/products/details/@item.ProductID">Details</a> |
+                <a href="/products/edit/@item.ProductID">Edit</a> |
+                <a href="/products/delete/@item.ProductID">Delete</a> |
+            </td>
+        </tr>
+    }
+
+    <tr>
+        <td colspan="9">
+            @{ 
+                int PrevPageNo = ViewBag.PageNo - 1;
+                if (PrevPageNo <= 0)
+                {
+                    PrevPageNo = 1;
+                }
+
+                int NextPageNo = ViewBag.PageNo + 1;
+                if (NextPageNo > ViewBag.NoOfPages)
+                {
+                    NextPageNo = ViewBag.NoOfPages;
+                }
+            }
+            <ul class="pagination justify-content-center">
+                <li class="page-item">
+                    <a class="page-link" href="/products/index?SortColumn=@ViewBag.SortColumn&IconClass=@ViewBag.IconClass&PageNo=@PrevPageNo">Prev</a>
+                </li>
+                @for (int i = 0; i < ViewBag.NoOfPages; i++)
+                {
+                    if ((i + 1) == ViewBag.PageNo)
+                    {
+                        <li class="page-item active">
+                            <a class="page-link" href="/products/index?SortColumn=@ViewBag.SortColumn&IconClass=@ViewBag.IconClass&PageNo=@(i + 1)">@( i + 1)</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="/products/index?SortColumn=@ViewBag.SortColumn&IconClass=@ViewBag.IconClass&PageNo=@(i + 1)">@( i + 1)</a>
+                        </li>
+                    }
+                }
+                <li class="page-item">
+                    <a class="page-link" href="/products/index?SortColumn=@ViewBag.SortColumn&IconClass=@ViewBag.IconClass&PageNo=@NextPageNo">Next</a>
+                </li>
+            </ul>
+        </td>
+    </tr>
+</table>
+
+
+Layout.cshtml
+-------------
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/font-awesome.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.3.1.js"></script>
+    <script src="~/Scripts/umd/popper.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm bg-info navbar-dark">
+        <a class="navbar-brand" href="#">Company</a>
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="/home/index">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="/categories/index">Categories</a></li>
+            <li class="nav-item"><a class="nav-link" href="/brands/index">Brands</a></li>
+            <li class="nav-item"><a class="nav-link" href="/products/index">Products</a></li>
+        </ul>
+    </nav>
+    <div class="container-fluid">
+        @RenderBody()
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
