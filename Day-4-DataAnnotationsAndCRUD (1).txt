@@ -1,3 +1,19 @@
+
+DataAnnotation
+---------------
+Table()
+Column()
+Key()
+Required
+MaxLength()
+DatabaseGenerated()
+ConcurrencyCheck---Concept there in CRUD Update
+NotMapped
+ForeignKey()
+
+
+
+
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -100,7 +116,8 @@ namespace DataAnnotationsEg
             ////ShopDbContext shopDbContext = new ShopDbContext();
             ////shopDbContext.Dispose();
 
-            //using (ShopDbContext shopDbContext = new ShopDbContext())
+            //using (ShopDbContext shopDbContext = new ShopDbContext())  -->using will disose automatically
+                                                                         -->using explicitly 
             //{
             //    Author author = shopDbContext.Authors.Find(4);
 
