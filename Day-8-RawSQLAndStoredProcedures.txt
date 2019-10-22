@@ -1,0 +1,146 @@
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.SqlClient;
+using System.Linq;
+
+namespace DataAnnotationsEg
+{
+    [Table("Author")]
+    class Author
+    {
+        [Key]
+        public int AuthorId { get; set; }
+
+        [MaxLength(15)]
+        [Required]
+        public string FirstName { get; set; }
+
+        [MaxLength(15),Required]
+        public string LastName { get; set; }
+
+        [NotMapped]
+        public string FullName
+        {
+            get { return FirstName + "" + LastName; }
+        }
+
+        public List<Book> Books { get; set; }
+    }
+
+    [Table("Book")]
+    class Book
+    {
+        [Key,Column(Order =0)]
+        public int BookId { get; set; }
+
+        [Column(Order =1)]
+        [Required]
+        public string BookName { get; set; }
+
+        [Column(Order = 2)]
+        [ConcurrencyCheck]
+        [Required]
+        public double PricePerUnit { get; set; }
+
+        [Column(Order =3)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedOn { get; set; }
+
+        [Column(Order = 4)]
+        [ForeignKey("Author")]
+        public int AuthorId { get; set; }
+
+        public Author Author { get; set; }
+    }
+
+    [NotMapped]
+    class BooksInfo
+    {
+        [Key]
+        public int BookId { get; set; }
+        public string BookName { get; set; }
+        public string AuthorName { get; set; }
+    }
+
+    class Customer
+    {
+        [Key]
+        public int CustomerId { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+    }
+
+    class ShopDbContext:DbContext
+    {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(@"Server=DESKTOP-O84LAFN;Database=EFCoreShopDb;Trusted_Connection=True;");
+
+            //EF 2.1 install the package Microsoft.EntityFrameworkCore.Proxies;
+            //optionsBuilder.UseLazyLoadingProxies();
+
+        }
+        public DbSet<Author> Authors { get; set; }
+        public DbSet<Book> Books { get; set; }
+        public DbSet<BooksInfo> BooksInfos { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            using (var shopDbContext = new ShopDbContext())
+            {
+                #region RawSql
+                //IEnumerable<Book> books = shopDbContext.Books.FromSql("Select * from Book").ToList();
+
+                ////AuthorId=1
+                //IEnumerable<Book> booksByAuthor = shopDbContext.Books
+                //                                    .FromSql("Select * from Book where AuthorId=1")
+                //                                    .ToList();
+
+
+                ////AuthorId=2
+                //int AuthourId = 2;
+                //IEnumerable<Book> booksByAuthor = shopDbContext.Books
+                //                                    .FromSql("Select * from Book where AuthorId={0}",AuthourId)
+                //                                    .ToList();
+
+                ////int AuthourId = 3;
+                //SqlParameter authorId = new SqlParameter("@AuthorId", 3);
+                //IEnumerable<Book> booksByAuthor = shopDbContext.Books
+                //                                    .FromSql("Select * from Book where AuthorId=@AuthorId", authorId)
+                //                                    .ToList();
+
+                //int BookId = 45;
+                //int NoOfRecords = shopDbContext.Database.ExecuteSqlCommand("Delete from Book where BookId={0}", BookId);
+
+                ////Execute StoredProcedure "GetAllAuthors"
+                //IEnumerable<Author> Authors = shopDbContext.Authors
+                //                                    .FromSql("exec GetAllAuthors")
+                //                                    .ToList();
+
+                ////Execute StoredProcedure "GetAllBooksByAuthorId 1"
+                //IEnumerable<Book> BooksByAuthorId = shopDbContext.Books
+                //                                        .FromSql("exec GetAllBooksByAuthorId 1")
+                //                                        .ToList(); 
+                #endregion
+
+
+                //Execute sp generated from migration file
+                //IEnumerable<Book> books = shopDbContext.Books
+                //                        .FromSql("exec GetAllBooks")
+                //                        .ToList();
+
+                IEnumerable<BooksInfo> booksInfo = shopDbContext.BooksInfos
+                    .FromSql("exec GetBooksInfo").ToList();
+                Console.ReadLine();
+            }
+           
+        }
+    }
+}

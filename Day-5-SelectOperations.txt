@@ -1,0 +1,127 @@
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.SqlClient;
+using System.Linq;
+
+namespace DataAnnotationsEg
+{
+    [Table("Author")]
+    class Author
+    {
+        [Key]
+        public int AuthorId { get; set; }
+
+        [MaxLength(15)]
+        [Required]
+        public string FirstName { get; set; }
+
+        [MaxLength(15),Required]
+        public string LastName { get; set; }
+
+        [NotMapped]
+        public string FullName
+        {
+            get { return FirstName + "" + LastName; }
+        }
+
+        public List<Book> Books { get; set; }
+    }
+
+    [Table("Book")]
+    class Book
+    {
+        [Key,Column(Order =0)]
+        public int BookId { get; set; }
+
+        [Column(Order =1)]
+        [Required]
+        public string BookName { get; set; }
+
+        [Column(Order = 2)]
+        [ConcurrencyCheck]
+        [Required]
+        public double PricePerUnit { get; set; }
+
+        [Column(Order =3)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedOn { get; set; }
+
+        [Column(Order = 4)]
+        [ForeignKey("Author")]
+        public int AuthorId { get; set; }
+
+        public Author Author { get; set; }
+    }
+
+
+    class ShopDbContext:DbContext
+    {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(@"Server=DESKTOP-O84LAFN;Database=EFCoreShopDb;Trusted_Connection=True;");
+        }
+        public DbSet<Author> Authors { get; set; }
+        public DbSet<Book> Books { get; set; }
+
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //        modelBuilder.Entity<Book>()
+                
+        //}
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //Console.Write("Enter Book Id : ");
+            //int BookId = int.Parse(Console.ReadLine());
+
+            using (var shopDbContext=new ShopDbContext())
+            {
+                //Book book;
+                //book = shopDbContext.Books.Find(BookId);
+
+                //book = shopDbContext.Books.Where(x => x.PricePerUnit == 1373).FirstOrDefault();
+
+                //book = shopDbContext.Books.Where(x => x.PricePerUnit == 1373).SingleOrDefault();                
+
+                //if (book != null)
+                //{
+                //    Console.WriteLine("BookId:{0} Name:{1} Price:{2}"
+                //        , book.BookId, book.BookName, book.PricePerUnit);
+                //}
+                //else
+                //{
+                //    Console.WriteLine("Book Not Found");
+                //}
+
+                //select count(*) from Book
+                //int NumberOfBooks = shopDbContext.Books.Count();
+                //Console.WriteLine("Number Of Books are " + NumberOfBooks);
+
+                //PricePerUnit>5000
+                //List<Book> list = shopDbContext.Books.Where(x => x.PricePerUnit > 5000).ToList();
+
+                //List<Book> list = shopDbContext.Books.Where(x => x.AuthorId==3).ToList();
+
+                //Get All the books whose author's first name is "Manzoor"
+                //int AuthorId = shopDbContext.Authors.Where(x => x.FirstName == "Manzoor").FirstOrDefault().AuthorId;
+                //List<Book> list = shopDbContext.Books.Where(x => x.AuthorId == AuthorId).ToList();
+
+                //List<Book> list = shopDbContext.Books.Where(x => x.Author.FirstName == "Manzoor").ToList();
+
+                //foreach (var book in list)
+                //{
+                //    Console.WriteLine("BookId:{0} Name:{1} Price:{2}" , book.BookId, book.BookName, book.PricePerUnit);
+                //}
+
+                Console.ReadLine();
+            }
+           
+        }
+    }
+}

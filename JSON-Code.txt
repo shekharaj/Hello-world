@@ -1,0 +1,110 @@
+______________________________________ Incoming Data _______________________________________________________
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <script src="~/Scripts/jquery-2.1.4.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        //Some calls
+        //Single Valued variable
+        //called services,
+        //var x = '{"Id":1}';
+        //var k = JSON.parse(x);
+        //alert(k.Id.toString());
+
+
+        //Array variables
+        //called services,
+        //var x = '[{"Id":10},{"Id":42},{"Id":39},{"Id":48}]';
+        //var k = JSON.parse(x);
+        //alert(k[2].Id.toString());
+
+        //$.each(k, function (i, item) {
+        //    alert(item.Id);
+        //});
+
+        //Single object
+        //called services,
+        //var x = '{"Id":1,"Name":"Manzoor"}';
+        //var k = JSON.parse(x);
+        //alert(k.Id.toString() + ' ' + k.Name);
+
+        //List of objects
+        //called services,
+        //var x = '[{"Id":1,"Name":"Manzoor"},{"Id":2,"Name":"Rick"},{"Id":3,"Name":"Peter"},{"Id":4,"Name":"Tom"}]';
+        //var k = JSON.parse(x);
+        ////alert(k[1].Id.toString() + ' ' + k[1].Name);
+
+        //$.each(k, function (i, item) {
+        //    alert(item.Id + " " + item.Name);
+        //});
+    });
+    </script>
+
+</head>
+<body>
+    <div> 
+    </div>
+</body>
+</html>
+
+_________________________________________________ Out going data_____________________________
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <script src="~/Scripts/jquery-2.1.4.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        //Some calls
+        //Single Valued variable
+        //called services,
+        //var x = { "Id": $("#txtId").val() };
+        //var k = JSON.stringify(x);
+        //alert(k);
+
+
+        //Array variables
+        //called services,
+        //var x = [{"Id":10},{"Id":42},{"Id":39},{"Id":48}];
+        //var k = JSON.stringify(x);
+        //alert(k);
+
+
+        //Single object
+        //called services,
+        //var x = { "Id": $("#txtId").val(), "Name": $("#txtName").val() };
+        //var k = JSON.stringify(x);
+        //alert(k);
+
+        //List of objects
+        //called services,
+        var x = [{"Id":1,"Name":"Manzoor"},{"Id":2,"Name":"Rick"},{"Id":3,"Name":"Peter"},{"Id":4,"Name":"Tom"}];
+        var k = JSON.stringify(x);
+        alert(k);
+
+    });
+    </script>
+
+</head>
+<body>
+    <div> 
+        <input type="text" id="txtId" value="78" />
+        <input type="text" id="txtName" value="ManzoorTheTrainer" />
+    </div>
+</body>
+</html>

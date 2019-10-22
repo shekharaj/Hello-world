@@ -1,0 +1,104 @@
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.SqlClient;
+using System.Linq;
+
+namespace DataAnnotationsEg
+{
+    [Table("Author")]
+    class Author
+    {
+        [Key]
+        public int AuthorId { get; set; }
+
+        [MaxLength(15)]
+        [Required]
+        public string FirstName { get; set; }
+
+        [MaxLength(15),Required]
+        public string LastName { get; set; }
+
+        [NotMapped]
+        public string FullName
+        {
+            get { return FirstName + "" + LastName; }
+        }
+
+        public List<Book> Books { get; set; }
+    }
+
+    [Table("Book")]
+    class Book
+    {
+        [Key,Column(Order =0)]
+        public int BookId { get; set; }
+
+        [Column(Order =1)]
+        [Required]
+        public string BookName { get; set; }
+
+        [Column(Order = 2)]
+        [ConcurrencyCheck]
+        [Required]
+        public double PricePerUnit { get; set; }
+
+        [Column(Order =3)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedOn { get; set; }
+
+        [Column(Order = 4)]
+        [ForeignKey("Author")]
+        public int AuthorId { get; set; }
+
+        public Author Author { get; set; }
+    }
+
+
+    class ShopDbContext:DbContext
+    {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(@"Server=DESKTOP-O84LAFN;Database=EFCoreShopDb;Trusted_Connection=True;");
+        }
+        public DbSet<Author> Authors { get; set; }
+        public DbSet<Book> Books { get; set; }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            using (var shopDbContext=new ShopDbContext())
+            {
+                //Immediate Mode - List, IEnumerable
+                //IEnumerable<Book> list = shopDbContext.Books.ToList();
+
+                //Deffered Mode - IEnumerable, IQueryable
+                //IEnumerable<Book> list = shopDbContext.Books;
+                IQueryable<Book> list = shopDbContext.Books;
+
+                //foreach (var item in list)
+                //{
+                //    Console.WriteLine("BookId : {0} BookName : {1} Price : {2}", item.BookId, item.BookName, item.PricePerUnit);
+                //}
+
+                //foreach (var item in list)
+                //{
+                //    Console.WriteLine("BookId : {0} BookName : {1} Price : {2}", item.BookId, item.BookName, item.PricePerUnit);
+                //}
+
+                foreach (var item in list.Where(x=>x.AuthorId==1))
+                {
+                    Console.WriteLine("BookId : {0} BookName : {1} Price : {2}", item.BookId, item.BookName, item.PricePerUnit);
+                }
+                
+
+                Console.ReadLine();
+            }
+           
+        }
+    }
+}
